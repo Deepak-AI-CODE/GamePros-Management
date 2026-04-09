@@ -3,9 +3,10 @@
 
 const CACHE_NAME = "tournament-manager-v1";
 const ASSETS = [
-  "/",
-  "/index.html",
-  "/manifest.json"
+  "/GamePros-Management/",
+  "/GamePros-Management/index.html",
+  "/GamePros-Management/manifest.json",
+  "/GamePros-Management/icons/icon-192.png"
 ];
 
 // Install: cache all assets
@@ -38,7 +39,7 @@ self.addEventListener("fetch", event => {
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return response;
-      }).catch(() => caches.match("/index.html"));
+      }).catch(() => caches.match("/GamePros-Management/index.html"));
     })
   );
 });
