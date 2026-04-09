@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1a472a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Tournament" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Tournament Manager</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f4f0; min-height: 100vh; padding-bottom: 80px; }
+    .header { background: linear-gradient(135deg, #1a472a, #2d6a4f); padding: 16px 16px 20px; color: white; position: sticky; top: 0; z-index: 100; }
+    .header h1 { font-size: 20px; font-weight: 700; }
+    .header p { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+    .tabs { display: flex; background: white; border-bottom: 1px solid #e0e0e0; position: sticky; top: 66px; z-index: 99; }
+    .tab { flex: 1; padding: 12px 4px; border: none; background: transparent; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .tab.active { color: #1a472a; border-bottom-color: #1a472a; }
+    .section { display: none; padding: 12px; }
+    .section.active { display: block; }
+    .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .card-title { font-size: 14px; font-weight: 700; color: #1a472a; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 11px; font-weight: 600; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; color: #222; background: #fafafa; -webkit-appearance: none; appearance: none; }
+    input:focus, select:focus { outline: none; border-color: #2d6a4f; background: white; }
+    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+    .btn { display: block; width: 100%; padding: 13px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.15s; margin-top: 4px; }
+    .btn:active { transform: scale(0.98); }
+    .btn-green { background: #1a472a; color: white; }
+    .btn-wa { background: #25D366; color: white; }
+    .btn-excel { background: #217346; color: white; }
+    .btn-blue { background: #1565c0; color: white; }
+    .match-card { background: white; border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-left: 4px solid #ddd; }
+    .match-card.status-pending { border-left-color: #f59e0b; }
+    .match-card.status-unpaid  { border-left-color: #ef4444; }
+    .match-card.status-paid    { border-left-color: #22c55e; }
+    .match-teams { font-size: 16px; font-weight: 700; color: #111; }
+    .match-vs { color: #aaa; font-weight: 400; font-size: 13px; }
+    .match-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .meta-tag { font-size: 11px; background: #f3f4f6; color: #555; padding: 3px 8px; border-radius: 20px; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-unpaid  { background: #fee2e2; color: #991b1b; }
+    .badge-paid    { background: #dcfce7; color: #166534; }
+    .action-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .btn-xs { padding: 7px 12px; border: 1px solid #ddd; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; background: #f9fafb; color: #333; }
+    .btn-xs.success { background: #dcfce7; color: #166534; border-color: #86efac; }
+    .btn-xs.wa     { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+    .btn-xs.danger { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+    .result-block { background: #f8fafc; border-radius: 8px; padding: 12px; margin-top: 10px; }
+    .result-block label { font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; }
+    .result-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .result-row span { font-size: 13px; color: #666; min-width: 90px; }
+    .result-row input, .result-row select { padding: 7px 10px; font-size: 13px; }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .stat-card { background: white; border-radius: 10px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .stat-val { font-size: 28px; font-weight: 800; color: #1a472a; }
+    .stat-val.red { color: #dc2626; }
+    .stat-label { font-size: 12px; color: #888; margin-top: 2px; }
+    .team-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+    .team-row:last-child { border-bottom: none; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; background: #d1fae5; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #065f46; margin-right: 12px; flex-shrink: 0; }
+    .team-name { font-size: 14px; font-weight: 600; color: #111; }
+    .team-sub  { font-size: 12px; color: #888; margin-top: 2px; }
+    .owed      { font-size: 14px; font-weight: 700; color: #dc2626; }
+    .clear-tag { font-size: 12px; color: #22c55e; font-weight: 600; }
+    .filter-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
+    .filter-btn { padding: 6px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; background: white; color: #666; white-space: nowrap; }
+    .filter-btn.active { background: #1a472a; color: white; border-color: #1a472a; }
+    .empty { text-align: center; padding: 40px 20px; color: #aaa; font-size: 14px; }
+    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #111; color: white; padding: 10px 20px; border-radius: 24px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 9999; white-space: nowrap; pointer-events: none; }
+    .toast.show { opacity: 1; }
+    .divider { height: 1px; background: #f0f0f0; margin: 14px 0; }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; display: flex; z-index: 100; }
+    .nav-btn { flex: 1; padding: 10px 0 12px; border: none; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .nav-icon { font-size: 22px; }
+    .nav-label { font-size: 10px; font-weight: 600; color: #999; }
+    .nav-btn.active .nav-label { color: #1a472a; }
+    .section-gap { height: 8px; }
+    @media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏏 Tournament Manager</h1>
+  <p>Track matches · Manage payments · Notify captains</p>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-btn active" onclick="switchTab('add', this)">
+    <span class="nav-icon">➕</span>
+    <span class="nav-label">Add Match</span>
+  </button>
+  <button class="nav-btn" onclick="switchTab('matches', this)">
+    <span class="nav-icon">🏏</span>
+    <span class="nav-label">Matches</span>
+  </button>
+  <button class="nav-btn" onclick="switchTab('teams', this)">
+    <span class="nav-icon">👥</span>
+    <span class="nav-label">Teams</span>
+  </button>
+  <button class="nav-btn" onclick="switchTab('summary', this)">
+    <span class="nav-icon">📊</span>
+    <span class="nav-label">Summary</span>
+  </button>
+</div>
+
+<!-- ADD MATCH -->
+<div id="sec-add" class="section active">
+  <div class="card">
+    <div class="card-title">Match Details</div>
+    <div class="field">
+      <label>Tournament Name</label>
+      <input id="f-tournament" type="text" placeholder="e.g. Summer Cup 2026" />
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Date</label>
+        <input id="f-date" type="date" />
+      </div>
+      <div class="field">
+        <label>Match Type</label>
+        <select id="f-type">
+          <option>T10</option><option>T20</option><option>ODI</option><option>Box Cricket</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Ground / Venue</label>
+      <input id="f-ground" type="text" placeholder="Ground name" />
+    </div>
+    <div class="divider"></div>
+    <div class="field-row">
+      <div class="field">
+        <label>Team A</label>
+        <select id="f-teamA" onchange="autofillCaptain('A')">
+          <option value="">Select team</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Team B</label>
+        <select id="f-teamB" onchange="autofillCaptain('B')">
+          <option value="">Select team</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Captain A Phone</label>
+        <input id="f-capA" type="tel" placeholder="+91 98765 43210" />
+      </div>
+      <div class="field">
+        <label>Captain B Phone</label>
+        <input id="f-capB" type="tel" placeholder="+91 98765 43210" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Amount (₹) per team</label>
+      <input id="f-amount" type="number" placeholder="500" inputmode="numeric" />
+    </div>
+    <button class="btn btn-green" onclick="addMatch()">➕ Add Match</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Add New Team</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Team Name</label>
+        <input id="nt-name" type="text" placeholder="Team name" />
+      </div>
+      <div class="field">
+        <label>Captain Name</label>
+        <input id="nt-captain" type="text" placeholder="Captain name" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Captain WhatsApp Number</label>
+      <input id="nt-phone" type="tel" placeholder="+91 98765 43210" inputmode="tel" />
+    </div>
+    <button class="btn btn-green" onclick="addTeam()">💾 Save Team</button>
+  </div>
+</div>
+
+<!-- MATCHES -->
+<div id="sec-matches" class="section">
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filterMatches('all',this)">All</button>
+    <button class="filter-btn" onclick="filterMatches('pending',this)">Pending</button>
+    <button class="filter-btn" onclick="filterMatches('unpaid',this)">Unpaid</button>
+    <button class="filter-btn" onclick="filterMatches('paid',this)">Paid</button>
+  </div>
+  <div id="matches-list"></div>
+  <button class="btn btn-excel" onclick="exportCSV()">📥 Download Excel / CSV</button>
+</div>
+
+<!-- TEAMS -->
+<div id="sec-teams" class="section">
+  <div class="card" id="teams-list"></div>
+</div>
+
+<!-- SUMMARY -->
+<div id="sec-summary" class="section">
+  <div class="stat-grid" id="stats-grid"></div>
+  <div class="card">
+    <div class="card-title">Pending Payments</div>
+    <div id="pending-list"></div>
+  </div>
+  <button class="btn btn-wa" onclick="pingAllUnpaid()">📲 Ping ALL Unpaid Captains on WhatsApp</button>
+  <div style="height:8px"></div>
+  <button class="btn btn-excel" onclick="exportCSV()">📥 Download Full Excel Report</button>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+let teams = JSON.parse(localStorage.getItem("tm_teams") || "[]");
+let matches = JSON.parse(localStorage.getItem("tm_matches") || "[]");
+let nextId = parseInt(localStorage.getItem("tm_nextId") || "1");
+let currentFilter = "all";
+
+// Seed demo data if empty
+if (!teams.length) {
+  teams = [
+    { id:1, name:"Warriors XI",       captain:"Rahul Patil",  phone:"919876543210" },
+    { id:2, name:"Thunder Strikers",  captain:"Amit Shah",    phone:"919765432109" },
+    { id:3, name:"Royal Challengers", captain:"Vijay More",   phone:"919654321098" },
+    { id:4, name:"Super Kings",       captain:"Suresh Yadav", phone:"919543210987" }
+  ];
+  save();
+}
+
+function save() {
+  localStorage.setItem("tm_teams",   JSON.stringify(teams));
+  localStorage.setItem("tm_matches", JSON.stringify(matches));
+  localStorage.setItem("tm_nextId",  nextId);
+}
+
+// ─── UI UTILS ─────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+function switchTab(name, el) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("sec-" + name).classList.add("active");
+  if (el) el.classList.add("active");
+  if (name === "matches") renderMatches();
+  if (name === "teams")   renderTeams();
+  if (name === "summary") renderSummary();
+}
+
+// ─── TEAMS ────────────────────────────────────────────────────────────────────
+function populateTeamDropdowns() {
+  ["f-teamA","f-teamB"].forEach(id => {
+    const sel = document.getElementById(id);
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">Select team</option>';
+    teams.forEach(t => {
+      const o = document.createElement("option");
+      o.value = t.name; o.textContent = t.name;
+      sel.appendChild(o);
+    });
+    sel.value = cur;
+  });
+}
+
+function autofillCaptain(side) {
+  const name = document.getElementById("f-team"+side).value;
+  const t = teams.find(x => x.name === name);
+  if (t) document.getElementById("f-cap"+side).value = "+" + t.phone;
+}
+
+function addTeam() {
+  const name    = document.getElementById("nt-name").value.trim();
+  const captain = document.getElementById("nt-captain").value.trim();
+  const phone   = document.getElementById("nt-phone").value.replace(/\D/g,"");
+  if (!name || !captain) { showToast("❌ Fill team name and captain"); return; }
+  if (teams.find(t => t.name.toLowerCase() === name.toLowerCase())) {
+    showToast("⚠️ Team already exists"); return;
+  }
+  teams.push({ id: teams.length+1, name, captain, phone });
+  save(); populateTeamDropdowns();
+  document.getElementById("nt-name").value = "";
+  document.getElementById("nt-captain").value = "";
+  document.getElementById("nt-phone").value = "";
+  showToast("✅ Team " + name + " saved!");
+}
+
+function deleteTeam(name) {
+  if (!confirm("Delete team " + name + "?")) return;
+  teams = teams.filter(t => t.name !== name);
+  save(); renderTeams(); populateTeamDropdowns();
+}
+
+function renderTeams() {
+  const el = document.getElementById("teams-list");
+  if (!teams.length) { el.innerHTML = '<div class="empty">No teams yet. Add from the Add Match tab.</div>'; return; }
+  el.innerHTML = `<div class="card-title">All Teams (${teams.length})</div>` + teams.map(t => {
+    const owed = matches
+      .filter(m => m.status==="unpaid" && (m.teamA===t.name||m.teamB===t.name))
+      .reduce((s,m)=>s+m.amount,0);
+    return `<div class="team-row">
+      <div class="avatar">${t.name.slice(0,2).toUpperCase()}</div>
+      <div style="flex:1">
+        <div class="team-name">${t.name}</div>
+        <div class="team-sub">👤 ${t.captain} · 📱 +${t.phone}</div>
+      </div>
+      ${owed>0 ? `<div class="owed">₹${owed} due</div>` : '<div class="clear-tag">✓ Clear</div>'}
+      <button class="btn-xs danger" style="margin-left:8px" onclick="deleteTeam('${t.name}')">✕</button>
+    </div>`;
+  }).join("");
+}
+
+// ─── MATCHES ──────────────────────────────────────────────────────────────────
+function addMatch() {
+  const tournament = document.getElementById("f-tournament").value.trim();
+  const date       = document.getElementById("f-date").value;
+  const ground     = document.getElementById("f-ground").value.trim();
+  const teamA      = document.getElementById("f-teamA").value;
+  const teamB      = document.getElementById("f-teamB").value;
+  const capAPhone  = document.getElementById("f-capA").value.replace(/\D/g,"");
+  const capBPhone  = document.getElementById("f-capB").value.replace(/\D/g,"");
+  const amount     = parseFloat(document.getElementById("f-amount").value)||0;
+  const type       = document.getElementById("f-type").value;
+
+  if (!tournament) { showToast("❌ Enter tournament name"); return; }
+  if (!date)       { showToast("❌ Select date"); return; }
+  if (!teamA || !teamB) { showToast("❌ Select both teams"); return; }
+  if (teamA === teamB)  { showToast("❌ Teams must be different"); return; }
+  if (amount <= 0) { showToast("❌ Enter valid amount"); return; }
+
+  matches.push({ id:nextId++, tournament, date, ground, teamA, teamB,
+    capAPhone, capBPhone, amount, type, status:"pending",
+    winner:"", scoreA:"", scoreB:"", createdAt: new Date().toISOString() });
+  save();
+  showToast("✅ Match added!");
+  document.getElementById("f-teamA").value = "";
+  document.getElementById("f-teamB").value = "";
+  document.getElementById("f-capA").value = "";
+  document.getElementById("f-capB").value = "";
+  document.getElementById("f-amount").value = "";
+}
+
+function filterMatches(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderMatches();
+}
+
+function renderMatches() {
+  const list = document.getElementById("matches-list");
+  let data = matches.filter(m => currentFilter==="all" || m.status===currentFilter);
+  data = [...data].sort((a,b) => b.id - a.id);
+  if (!data.length) { list.innerHTML = '<div class="empty">No matches found</div>'; return; }
+  list.innerHTML = data.map(m => `
+    <div class="match-card status-${m.status}" id="mc-${m.id}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="match-teams">${m.teamA} <span class="match-vs">vs</span> ${m.teamB}</div>
+          <div class="match-meta">
+            <span class="meta-tag">📅 ${m.date}</span>
+            <span class="meta-tag">🎮 ${m.type}</span>
+            ${m.ground ? `<span class="meta-tag">📍 ${m.ground}</span>` : ""}
+            <span class="meta-tag">🏆 ${m.tournament}</span>
+            <span class="meta-tag">💰 ₹${m.amount}/team</span>
+            ${m.winner ? `<span class="meta-tag">🥇 ${m.winner}</span>` : ""}
+          </div>
+        </div>
+        <span class="badge badge-${m.status}">${m.status}</span>
+      </div>
+      ${m.scoreA||m.scoreB ? `<div style="margin-top:8px;font-size:13px;color:#555">${m.teamA}: <b>${m.scoreA}</b> &nbsp;|&nbsp; ${m.teamB}: <b>${m.scoreB}</b></div>` : ""}
+
+      ${m.status==="pending" ? `
+      <div class="result-block">
+        <label>Update Result</label>
+        <div class="result-row"><span>${m.teamA}</span><input id="sA-${m.id}" placeholder="e.g. 145/6" value="${m.scoreA}" /></div>
+        <div class="result-row"><span>${m.teamB}</span><input id="sB-${m.id}" placeholder="e.g. 132/8" value="${m.scoreB}" /></div>
+        <div class="result-row"><span>Winner</span>
+          <select id="win-${m.id}">
+            <option value="">Select winner</option>
+            <option ${m.winner===m.teamA?"selected":""} value="${m.teamA}">${m.teamA}</option>
+            <option ${m.winner===m.teamB?"selected":""} value="${m.teamB}">${m.teamB}</option>
+            <option value="No Result">No Result</option>
+          </select>
+        </div>
+      </div>` : ""}
+
+      <div class="action-row">
+        ${m.status==="pending" ? `<button class="btn-xs success" onclick="saveResult(${m.id})">✓ Save Result</button>` : ""}
+        ${m.status==="unpaid"  ? `<button class="btn-xs success" onclick="markPaid(${m.id})">✓ Mark Paid</button>` : ""}
+        <button class="btn-xs wa" onclick="pingCaptains(${m.id})">📲 Ping Captains</button>
+        <button class="btn-xs danger" onclick="deleteMatch(${m.id})">🗑 Delete</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function saveResult(id) {
+  const m = matches.find(x=>x.id===id);
+  m.scoreA = document.getElementById("sA-"+id).value.trim();
+  m.scoreB = document.getElementById("sB-"+id).value.trim();
+  m.winner = document.getElementById("win-"+id).value;
+  if (!m.winner) { showToast("❌ Select a winner"); return; }
+  m.status = "unpaid";
+  save(); renderMatches();
+  showToast("✅ Result saved! Now collect payment.");
+}
+
+function markPaid(id) {
+  const m = matches.find(x=>x.id===id);
+  m.status = "paid";
+  save(); renderMatches();
+  showToast("✅ Payment marked as received!");
+}
+
+function deleteMatch(id) {
+  if (!confirm("Delete this match?")) return;
+  matches = matches.filter(m=>m.id!==id);
+  save(); renderMatches();
+}
+
+// ─── WHATSAPP ─────────────────────────────────────────────────────────────────
+function buildMsg(m) {
+  return encodeURIComponent(
+    `🏏 *${m.tournament}*\n` +
+    `📅 Date: ${m.date}${m.ground ? "\n📍 Ground: " + m.ground : ""}\n\n` +
+    `*${m.teamA}* vs *${m.teamB}*\n` +
+    (m.scoreA ? `Score: ${m.teamA} ${m.scoreA} | ${m.teamB} ${m.scoreB}\n` : "") +
+    (m.winner ? `🥇 Winner: *${m.winner}*\n` : "") +
+    `\n💰 Amount to pay: *₹${m.amount}*\n` +
+    `\nPlease clear the payment at the earliest. Thank you! 🙏`
+  );
+}
+
+function pingCaptains(id) {
+  const m = matches.find(x=>x.id===id);
+  const msg = buildMsg(m);
+  if (m.capAPhone) window.open("https://wa.me/"+m.capAPhone+"?text="+msg, "_blank");
+  if (m.capBPhone) setTimeout(()=>window.open("https://wa.me/"+m.capBPhone+"?text="+msg,"_blank"), 700);
+  showToast("📲 Opening WhatsApp...");
+}
+
+function pingAllUnpaid() {
+  const unpaid = matches.filter(m=>m.status==="unpaid");
+  if (!unpaid.length) { showToast("🎉 No unpaid matches!"); return; }
+  let delay = 0;
+  unpaid.forEach(m => {
+    const msg = buildMsg(m);
+    if (m.capAPhone) { setTimeout(()=>window.open("https://wa.me/"+m.capAPhone+"?text="+msg,"_blank"), delay); delay+=800; }
+    if (m.capBPhone) { setTimeout(()=>window.open("https://wa.me/"+m.capBPhone+"?text="+msg,"_blank"), delay); delay+=800; }
+  });
+  showToast(`📲 Pinging ${unpaid.length} match captains...`);
+}
+
+// ─── SUMMARY ──────────────────────────────────────────────────────────────────
+function renderSummary() {
+  const total   = matches.length;
+  const pending = matches.filter(m=>m.status==="pending").length;
+  const unpaid  = matches.filter(m=>m.status==="unpaid").length;
+  const paid    = matches.filter(m=>m.status==="paid").length;
+  const dueAmt  = matches.filter(m=>m.status==="unpaid").reduce((s,m)=>s+m.amount*2,0);
+
+  document.getElementById("stats-grid").innerHTML = `
+    <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-label">Total Matches</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#f59e0b">${pending}</div><div class="stat-label">In Progress</div></div>
+    <div class="stat-card"><div class="stat-val red">${unpaid}</div><div class="stat-label">Awaiting Payment</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#22c55e">${paid}</div><div class="stat-label">Payments Done</div></div>
+  `;
+
+  const unpaidList = matches.filter(m=>m.status==="unpaid");
+  const pl = document.getElementById("pending-list");
+  if (!unpaidList.length) {
+    pl.innerHTML = '<div class="empty" style="padding:16px 0">🎉 All payments clear!</div>';
+  } else {
+    pl.innerHTML = `<div style="font-size:13px;font-weight:700;color:#dc2626;margin-bottom:8px">Total due: ₹${dueAmt}</div>` +
+    unpaidList.map(m=>`
+      <div class="team-row">
+        <div style="flex:1">
+          <div class="team-name">${m.teamA} vs ${m.teamB}</div>
+          <div class="team-sub">${m.date} · ${m.tournament}</div>
+        </div>
+        <div class="owed">₹${m.amount*2}</div>
+        <button class="btn-xs wa" style="margin-left:8px" onclick="pingCaptains(${m.id})">📲</button>
+      </div>
+    `).join("");
+  }
+}
+
+// ─── EXPORT CSV ───────────────────────────────────────────────────────────────
+function exportCSV() {
+  if (!matches.length) { showToast("No matches to export"); return; }
+  const headers = ["ID","Date","Tournament","Ground","Type","Team A","Team B","Score A","Score B","Winner","Amount per Team","Total Amount","Status","Captain A Phone","Captain B Phone"];
+  const rows = matches.map(m=>[
+    m.id, m.date, m.tournament, m.ground, m.type,
+    m.teamA, m.teamB, m.scoreA, m.scoreB, m.winner,
+    m.amount, m.amount*2, m.status, m.capAPhone, m.capBPhone
+  ]);
+  const csv = [headers,...rows].map(r=>r.map(c=>'"'+String(c||"").replace(/"/g,'""')+'"').join(",")).join("\n");
+  const blob = new Blob([csv],{type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "tournament_" + new Date().toISOString().slice(0,10) + ".csv";
+  a.click();
+  showToast("📥 CSV downloaded! Open in Excel.");
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.getElementById("f-date").value = new Date().toISOString().slice(0,10);
+populateTeamDropdowns();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js")
+      .then(r => console.log("SW registered"))
+      .catch(e => console.log("SW error", e));
+  });
+}
+</script>
+</body>
+</html>
