@@ -11,261 +11,272 @@
   <link rel="apple-touch-icon" href="./icons/icon-192.png" />
   <title>GamePros Tournament</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    :root {
-      --gold: #d4a017; --gold-light: #f0c040; --gold-dark: #a07810;
-      --black: #111111; --black2: #1c1c1c; --black3: #2a2a2a;
-      --surface: #f5f5f0; --card-bg: #ffffff; --border: #e5e5e0;
-      --text: #111111; --text2: #555555; --text3: #999999;
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    :root{
+      --gold:#d4a017;--gold-light:#f0c040;--gold-dark:#a07810;
+      --black:#111111;--black2:#1c1c1c;--black3:#2a2a2a;
+      --surface:#f5f5f0;--card-bg:#ffffff;--border:#e5e5e0;
+      --text:#111111;--text2:#555555;--text3:#999999;
     }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--surface); min-height: 100vh; padding-bottom: 84px; }
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--surface);min-height:100vh;padding-bottom:84px}
 
-    /* ─── LOGIN SCREEN ─── */
-    #login-screen {
-      position: fixed; inset: 0; background: var(--black); z-index: 9999;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px;
+    /* ── LOADING ── */
+    #loading-screen{position:fixed;inset:0;background:var(--black);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+    #loading-screen.hidden{display:none}
+    .ld-dots{display:flex;gap:8px}
+    .ld-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);animation:ldp 1.2s infinite}
+    .ld-dot:nth-child(2){animation-delay:.2s}.ld-dot:nth-child(3){animation-delay:.4s}
+    @keyframes ldp{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+    .ld-text{color:#555;font-size:13px;font-weight:600}
+
+    /* ── LOGIN ── */
+    #login-screen{position:fixed;inset:0;background:var(--black);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+    #login-screen.hidden{display:none}
+    .login-tagline{color:var(--gold);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;opacity:.7}
+    .login-card{background:#1c1c1c;border:1px solid #333;border-radius:16px;padding:24px 20px;width:100%;max-width:340px}
+    .login-title{color:white;font-size:17px;font-weight:800;margin-bottom:4px}
+    .login-sub{color:#555;font-size:12px;margin-bottom:20px}
+    .pin-dots{display:flex;justify-content:center;gap:12px;margin:16px 0}
+    .pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid #444;background:transparent;transition:all .15s}
+    .pin-dot.filled{background:var(--gold);border-color:var(--gold)}
+    .numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+    .num-btn{padding:15px;background:#2a2a2a;border:1px solid #333;border-radius:10px;color:white;font-size:19px;font-weight:700;cursor:pointer;text-align:center;transition:all .12s}
+    .num-btn:active{background:#3a3a3a;transform:scale(.95)}
+    .num-btn.del{font-size:15px;color:#888}
+    .num-btn.empty{background:transparent;border:none;cursor:default}
+    .login-error{color:#f87171;font-size:13px;font-weight:600;text-align:center;margin-top:10px;min-height:18px}
+    .user-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;margin-top:12px}
+    .badge-admin{background:#78350f;color:#fcd34d}
+    .badge-user{background:#1e3a5f;color:#93c5fd}
+
+    /* ── MODAL ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:8888;display:flex;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.hidden{display:none}
+    .modal-box{background:#1c1c1c;border:1px solid #333;border-radius:16px;padding:22px;width:100%;max-width:360px;max-height:85vh;overflow-y:auto}
+    .modal-title{color:white;font-size:16px;font-weight:800;margin-bottom:14px}
+    .modal-box input{width:100%;padding:10px 12px;background:#111;border:1px solid #333;border-radius:8px;color:white;font-size:14px;margin-bottom:10px;-webkit-appearance:none}
+    .modal-box input:focus{outline:none;border-color:var(--gold)}
+    .modal-box label{display:block;font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+    .modal-row{display:flex;gap:8px;margin-top:4px}
+    .btn-mo{flex:1;padding:11px;border:none;border-radius:8px;font-weight:800;cursor:pointer;font-size:14px}
+    .btn-mo.gold{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--black)}
+    .btn-mo.dark{background:#2a2a2a;color:#aaa;border:1px solid #333}
+
+    /* ── CONTACT PICKER ── */
+    .cap-row{display:flex;gap:6px;align-items:flex-end}
+    .cap-row input{flex:1}
+    .btn-contact{padding:10px 11px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;color:var(--black);flex-shrink:0;white-space:nowrap}
+    .contact-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:7777;display:flex;align-items:flex-end}
+    .contact-overlay.hidden{display:none}
+    .contact-sheet{background:white;border-radius:20px 20px 0 0;width:100%;max-height:75vh;display:flex;flex-direction:column;padding:0 0 20px}
+    .contact-handle{width:40px;height:4px;background:#ddd;border-radius:2px;margin:12px auto 4px}
+    .contact-header{padding:8px 16px 12px;border-bottom:1px solid #f0f0f0}
+    .contact-header h3{font-size:15px;font-weight:800;color:#111;margin-bottom:8px}
+    .contact-search{width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;-webkit-appearance:none}
+    .contact-search:focus{outline:none;border-color:var(--gold)}
+    .contact-list{overflow-y:auto;flex:1}
+    .contact-item{display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid #f8f8f8;cursor:pointer}
+    .contact-item:active{background:#f5f5f0}
+    .contact-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--black);margin-right:10px;flex-shrink:0}
+    .c-name{font-size:14px;font-weight:600;color:#111}
+    .c-phone{font-size:12px;color:#888;margin-top:1px}
+    .contact-empty{text-align:center;padding:28px 20px;color:#aaa;font-size:14px}
+    .contact-api-btn{margin:10px 16px 4px;padding:10px;background:var(--black);color:var(--gold);border:1px solid var(--gold);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;width:calc(100% - 32px)}
+
+    /* ── MAIN APP ── */
+    #app{display:none}
+    #app.visible{display:block}
+
+    .header{background:var(--black);padding:0 14px;display:flex;align-items:center;justify-content:space-between;height:62px;position:sticky;top:0;z-index:100;border-bottom:2px solid var(--gold)}
+    .logo-svg{width:150px;height:42px}
+    .header-right{display:flex;align-items:center;gap:8px}
+    .sync-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0}
+    .sync-dot.off{background:#444}
+    .sync-dot.syncing{background:var(--gold);animation:ldp 1s infinite}
+    .logged-as{font-size:10px;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+    .logged-as span{color:var(--gold)}
+    .btn-logout{background:#2a2a2a;border:1px solid #444;color:#888;padding:5px 9px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer}
+
+    .tabs{display:flex;background:var(--black2);border-bottom:1px solid var(--black3);position:sticky;top:62px;z-index:99}
+    .tab{flex:1;padding:10px 3px;border:none;background:transparent;font-size:11px;font-weight:700;color:#555;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;text-transform:uppercase}
+    .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+    .tab.admin-only{display:none}
+    .tab.admin-only.show{display:block}
+
+    .section{display:none;padding:12px}
+    .section.active{display:block}
+    .card{background:var(--card-bg);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);border:1px solid var(--border)}
+    .card-title{font-size:13px;font-weight:800;color:var(--gold-dark);margin-bottom:14px;text-transform:uppercase;letter-spacing:.8px;border-left:3px solid var(--gold);padding-left:8px}
+
+    .field{margin-bottom:12px}
+    .field label{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    input[type=text],input[type=date],input[type=tel],input[type=number],input[type=password],select{
+      width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;color:var(--text);background:#fafafa;-webkit-appearance:none;appearance:none
     }
-    #login-screen.hidden { display: none; }
-    .login-logo { margin-bottom: 8px; }
-    .login-logo svg { width: 200px; height: 56px; }
-    .login-tagline { color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; opacity: 0.7; }
-    .login-card { background: #1c1c1c; border: 1px solid #333; border-radius: 16px; padding: 28px 24px; width: 100%; max-width: 360px; }
-    .login-title { color: white; font-size: 18px; font-weight: 800; margin-bottom: 6px; }
-    .login-sub   { color: #666; font-size: 13px; margin-bottom: 24px; }
-    .login-field { margin-bottom: 14px; }
-    .login-field label { display: block; font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .login-field input { width: 100%; padding: 12px 14px; background: #111; border: 1px solid #333; border-radius: 10px; color: white; font-size: 15px; -webkit-appearance: none; }
-    .login-field input:focus { outline: none; border-color: var(--gold); }
-    .login-field input::placeholder { color: #444; }
-    .btn-login { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--black); border: none; border-radius: 10px; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 6px; letter-spacing: 0.3px; }
-    .btn-login:active { transform: scale(0.98); }
-    .login-error { color: #f87171; font-size: 13px; font-weight: 600; text-align: center; margin-top: 10px; min-height: 20px; }
+    input:focus,select:focus{outline:none;border-color:var(--gold);background:white}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 
-    /* PIN dots */
-    .pin-dots { display: flex; justify-content: center; gap: 12px; margin: 20px 0 16px; }
-    .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #444; background: transparent; transition: all 0.15s; }
-    .pin-dot.filled { background: var(--gold); border-color: var(--gold); }
+    .btn{display:block;width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;transition:all .15s;margin-top:6px}
+    .btn:active{transform:scale(.97)}
+    .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--black)}
+    .btn-wa{background:#25D366;color:white}
+    .btn-excel{background:#217346;color:white}
+    .btn-danger{background:#dc2626;color:white}
 
-    /* Numpad */
-    .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
-    .num-btn { padding: 16px; background: #2a2a2a; border: 1px solid #333; border-radius: 12px; color: white; font-size: 20px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.12s; }
-    .num-btn:active { background: #3a3a3a; transform: scale(0.95); }
-    .num-btn.del { font-size: 16px; color: #888; }
-    .num-btn.empty { background: transparent; border: none; cursor: default; }
+    .match-card{background:var(--card-bg);border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);border-left:4px solid #ddd;border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+    .match-card.status-pending{border-left-color:#f59e0b}
+    .match-card.status-unpaid{border-left-color:#ef4444}
+    .match-card.status-paid{border-left-color:#22c55e}
+    .match-teams{font-size:15px;font-weight:800;color:var(--text)}
+    .match-vs{color:var(--text3);font-weight:400;font-size:12px}
+    .match-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+    .meta-tag{font-size:11px;background:#f3f4f6;color:#555;padding:3px 8px;border-radius:20px}
+    .meta-night{background:#1e1b4b;color:#a5b4fc}
+    .meta-day{background:#fef9c3;color:#854d0e}
+    .meta-pink{background:#fce7f3;color:#9d174d}
+    .meta-red{background:#fee2e2;color:#991b1b}
+    .meta-white{background:#f8fafc;color:#334155;border:1px solid #e2e8f0}
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase}
+    .badge-pending{background:#fef3c7;color:#92400e}
+    .badge-unpaid{background:#fee2e2;color:#991b1b}
+    .badge-paid{background:#dcfce7;color:#166534}
 
-    /* ─── CHANGE PIN MODAL ─── */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 8888; display: flex; align-items: center; justify-content: center; padding: 24px; }
-    .modal-overlay.hidden { display: none; }
-    .modal-box { background: #1c1c1c; border: 1px solid #333; border-radius: 16px; padding: 24px; width: 100%; max-width: 340px; }
-    .modal-title { color: white; font-size: 16px; font-weight: 800; margin-bottom: 16px; }
-    .modal-box input { width: 100%; padding: 11px 13px; background: #111; border: 1px solid #333; border-radius: 8px; color: white; font-size: 15px; margin-bottom: 10px; -webkit-appearance: none; }
-    .modal-box input:focus { outline: none; border-color: var(--gold); }
-    .modal-row { display: flex; gap: 10px; margin-top: 4px; }
-    .btn-modal-ok  { flex: 1; padding: 12px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--black); border: none; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 14px; }
-    .btn-modal-cancel { flex: 1; padding: 12px; background: #2a2a2a; color: #aaa; border: 1px solid #333; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; }
+    .action-row{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+    .btn-xs{padding:7px 11px;border:1px solid #ddd;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;background:#f9fafb;color:#333}
+    .btn-xs.success{background:#dcfce7;color:#166534;border-color:#86efac}
+    .btn-xs.wa{background:#d1fae5;color:#065f46;border-color:#6ee7b7}
+    .btn-xs.danger{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
 
-    /* ─── CONTACT PICKER ─── */
-    .contact-wrap { position: relative; }
-    .cap-input-row { display: flex; gap: 6px; align-items: flex-end; }
-    .cap-input-row input { flex: 1; }
-    .btn-contact { padding: 10px 12px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border: none; border-radius: 8px; cursor: pointer; font-size: 16px; flex-shrink: 0; white-space: nowrap; }
-    .btn-contact:active { transform: scale(0.95); }
+    .result-block{background:#f8fafc;border-radius:8px;padding:12px;margin-top:10px;border:1px solid #e2e8f0}
+    .result-block label{font-size:11px;font-weight:700;color:#666;text-transform:uppercase}
+    .result-row{display:flex;align-items:center;gap:8px;margin-top:7px}
+    .result-row span{font-size:13px;color:#666;min-width:90px}
+    .result-row input,.result-row select{padding:7px 10px;font-size:13px}
 
-    /* Contact search overlay */
-    .contact-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 7777; display: flex; align-items: flex-end; }
-    .contact-overlay.hidden { display: none; }
-    .contact-sheet { background: white; border-radius: 20px 20px 0 0; width: 100%; max-height: 75vh; display: flex; flex-direction: column; padding: 0 0 20px; }
-    .contact-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 12px auto 4px; }
-    .contact-header { padding: 8px 16px 12px; border-bottom: 1px solid #f0f0f0; }
-    .contact-header h3 { font-size: 15px; font-weight: 800; color: #111; margin-bottom: 8px; }
-    .contact-search { width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; -webkit-appearance: none; }
-    .contact-search:focus { outline: none; border-color: var(--gold); }
-    .contact-list { overflow-y: auto; flex: 1; }
-    .contact-item { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f8f8f8; cursor: pointer; }
-    .contact-item:active { background: #f5f5f0; }
-    .contact-av { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-light)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: var(--black); margin-right: 12px; flex-shrink: 0; }
-    .contact-name { font-size: 14px; font-weight: 600; color: #111; }
-    .contact-phone { font-size: 12px; color: #888; margin-top: 1px; }
-    .contact-empty { text-align: center; padding: 40px 20px; color: #aaa; font-size: 14px; }
-    .contact-api-btn { margin: 12px 16px 4px; padding: 11px; background: var(--black); color: var(--gold); border: 1px solid var(--gold); border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; width: calc(100% - 32px); }
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+    .stat-card{background:var(--card-bg);border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.07);border:1px solid var(--border)}
+    .stat-val{font-size:26px;font-weight:800}
 
-    /* ─── MAIN APP ─── */
-    #app { display: none; }
-    #app.visible { display: block; }
+    .team-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #f3f4f6}
+    .team-row:last-child{border-bottom:none}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--black);margin-right:11px;flex-shrink:0}
+    .team-name{font-size:14px;font-weight:700;color:var(--text)}
+    .team-sub{font-size:12px;color:var(--text3);margin-top:2px}
+    .owed{font-size:13px;font-weight:700;color:#dc2626}
+    .clear-tag{font-size:12px;color:#16a34a;font-weight:700}
 
-    .header { background: var(--black); padding: 0 16px; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--gold); }
-    .logo-wrap { display: flex; align-items: center; }
-    .logo-svg { width: 160px; height: 44px; }
-    .header-right { display: flex; align-items: center; gap: 10px; }
-    .header-right span { font-size: 11px; color: var(--gold); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-    .btn-logout { background: #2a2a2a; border: 1px solid #444; color: #aaa; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; }
-    .btn-logout:active { background: #333; }
+    /* ── USERS TABLE (admin panel) ── */
+    .user-row{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid #f3f4f6}
+    .user-row:last-child{border-bottom:none}
+    .user-av{width:36px;height:36px;border-radius:50%;background:#1c1c1c;display:flex;align-items:center;justify-content:center;font-size:16px;margin-right:10px;flex-shrink:0}
+    .user-name{font-size:14px;font-weight:700;color:var(--text)}
+    .user-role{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:2px;display:inline-block}
+    .role-admin{background:#78350f;color:#fcd34d}
+    .role-user{background:#1e3a5f;color:#93c5fd}
+    .pin-display{font-size:13px;font-weight:700;font-family:monospace;color:#888;background:#f3f4f6;padding:3px 8px;border-radius:6px;letter-spacing:2px}
 
-    .tabs { display: flex; background: var(--black2); border-bottom: 1px solid var(--black3); position: sticky; top: 66px; z-index: 99; }
-    .tab { flex: 1; padding: 11px 4px; border: none; background: transparent; font-size: 11px; font-weight: 700; color: #666; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; letter-spacing: 0.3px; text-transform: uppercase; }
-    .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .filter-row{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px}
+    .filter-btn{padding:6px 14px;border:1px solid #ddd;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:white;color:#666;white-space:nowrap}
+    .filter-btn.active{background:var(--black);color:var(--gold);border-color:var(--gold)}
 
-    .section { display: none; padding: 12px; }
-    .section.active { display: block; }
-    .card { background: var(--card-bg); border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 1px solid var(--border); }
-    .card-title { font-size: 13px; font-weight: 800; color: var(--gold-dark); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.8px; border-left: 3px solid var(--gold); padding-left: 8px; }
+    .divider{height:1px;background:#f0f0f0;margin:14px 0}
+    .empty{text-align:center;padding:36px 20px;color:#aaa;font-size:14px}
 
-    .field { margin-bottom: 12px; }
-    .field label { display: block; font-size: 11px; font-weight: 700; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
-    .field-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .field-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    input[type="text"], input[type="date"], input[type="tel"], input[type="number"], input[type="password"], select {
-      width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; color: var(--text); background: #fafafa; -webkit-appearance: none; appearance: none;
-    }
-    input:focus, select:focus { outline: none; border-color: var(--gold); background: white; }
-    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+    .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--gold);padding:10px 20px;border-radius:24px;font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;z-index:9990;white-space:nowrap;pointer-events:none;border:1px solid var(--gold)}
+    .toast.show{opacity:1}
 
-    .btn { display: block; width: 100%; padding: 13px; border: none; border-radius: 10px; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.15s; margin-top: 6px; }
-    .btn:active { transform: scale(0.97); }
-    .btn-gold  { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--black); }
-    .btn-wa    { background: #25D366; color: white; }
-    .btn-excel { background: #217346; color: white; }
-    .btn-dark  { background: var(--black); color: var(--gold); border: 1px solid var(--gold); }
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--black);border-top:2px solid var(--gold);display:flex;z-index:100}
+    .nav-btn{flex:1;padding:8px 0 10px;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+    .nav-icon{font-size:19px}
+    .nav-label{font-size:9px;font-weight:700;color:#555;text-transform:uppercase}
+    .nav-btn.active .nav-label{color:var(--gold)}
+    .nav-btn.admin-nav{display:none}
+    .nav-btn.admin-nav.show{display:flex}
 
-    .match-card { background: var(--card-bg); border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border-left: 4px solid #ddd; border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .match-card.status-pending { border-left-color: #f59e0b; }
-    .match-card.status-unpaid  { border-left-color: #ef4444; }
-    .match-card.status-paid    { border-left-color: #22c55e; }
-    .match-teams { font-size: 15px; font-weight: 800; color: var(--text); }
-    .match-vs    { color: var(--text3); font-weight: 400; font-size: 12px; }
-    .match-meta  { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
-    .meta-tag    { font-size: 11px; background: #f3f4f6; color: #555; padding: 3px 8px; border-radius: 20px; }
-    .meta-night  { background: #1e1b4b; color: #a5b4fc; }
-    .meta-day    { background: #fef9c3; color: #854d0e; }
-    .meta-pink   { background: #fce7f3; color: #9d174d; }
-    .meta-red    { background: #fee2e2; color: #991b1b; }
-    .meta-white  { background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; }
+    .settings-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid #f3f4f6}
+    .settings-row:last-child{border-bottom:none}
+    .s-label{font-size:14px;font-weight:600;color:var(--text)}
+    .s-sub{font-size:12px;color:var(--text3);margin-top:2px}
 
-    .badge         { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-    .badge-pending { background: #fef3c7; color: #92400e; }
-    .badge-unpaid  { background: #fee2e2; color: #991b1b; }
-    .badge-paid    { background: #dcfce7; color: #166534; }
-
-    .action-row { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; }
-    .btn-xs         { padding: 7px 11px; border: 1px solid #ddd; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; background: #f9fafb; color: #333; }
-    .btn-xs.success { background: #dcfce7; color: #166534; border-color: #86efac; }
-    .btn-xs.wa      { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
-    .btn-xs.danger  { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
-
-    .result-block       { background: #f8fafc; border-radius: 8px; padding: 12px; margin-top: 10px; border: 1px solid #e2e8f0; }
-    .result-block label { font-size: 11px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 0.4px; }
-    .result-row         { display: flex; align-items: center; gap: 8px; margin-top: 7px; }
-    .result-row span    { font-size: 13px; color: #666; min-width: 90px; }
-    .result-row input, .result-row select { padding: 7px 10px; font-size: 13px; }
-
-    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-    .stat-card { background: var(--card-bg); border-radius: 10px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); border: 1px solid var(--border); }
-    .stat-val  { font-size: 28px; font-weight: 800; }
-
-    .team-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
-    .team-row:last-child { border-bottom: none; }
-    .avatar    { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-light)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; color: var(--black); margin-right: 12px; flex-shrink: 0; }
-    .team-name { font-size: 14px; font-weight: 700; color: var(--text); }
-    .team-sub  { font-size: 12px; color: var(--text3); margin-top: 2px; }
-    .owed      { font-size: 14px; font-weight: 700; color: #dc2626; }
-    .clear-tag { font-size: 12px; color: #16a34a; font-weight: 700; }
-
-    .filter-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
-    .filter-btn { padding: 6px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; background: white; color: #666; white-space: nowrap; }
-    .filter-btn.active { background: var(--black); color: var(--gold); border-color: var(--gold); }
-
-    .divider { height: 1px; background: #f0f0f0; margin: 14px 0; }
-    .empty { text-align: center; padding: 40px 20px; color: #aaa; font-size: 14px; }
-
-    .toast { position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%); background: var(--black); color: var(--gold); padding: 10px 20px; border-radius: 24px; font-size: 13px; font-weight: 700; opacity: 0; transition: opacity 0.3s; z-index: 9990; white-space: nowrap; pointer-events: none; border: 1px solid var(--gold); }
-    .toast.show { opacity: 1; }
-
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--black); border-top: 2px solid var(--gold); display: flex; z-index: 100; }
-    .nav-btn    { flex: 1; padding: 8px 0 10px; border: none; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-    .nav-icon   { font-size: 20px; }
-    .nav-label  { font-size: 10px; font-weight: 700; color: #555; text-transform: uppercase; }
-    .nav-btn.active .nav-label { color: var(--gold); }
-
-    /* Admin Settings tab */
-    .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f3f4f6; }
-    .settings-row:last-child { border-bottom: none; }
-    .settings-label { font-size: 14px; font-weight: 600; color: var(--text); }
-    .settings-sub   { font-size: 12px; color: var(--text3); margin-top: 2px; }
-
-    @media (max-width: 420px) { .field-row { grid-template-columns: 1fr; } .field-row3 { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:420px){.field-row{grid-template-columns:1fr}.field-row3{grid-template-columns:1fr 1fr}}
   </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════
-     LOGIN SCREEN
-═══════════════════════════════════════════════ -->
-<div id="login-screen">
-  <div class="login-logo">
-    <svg viewBox="0 0 200 56" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#f5d060"/>
-          <stop offset="50%" stop-color="#d4a017"/>
-          <stop offset="100%" stop-color="#8a6200"/>
-        </linearGradient>
-      </defs>
-      <path d="M6,3 L194,3 Q198,3 198,7 L198,36 Q170,50 100,52 Q30,50 2,36 L2,7 Q2,3 6,3 Z" fill="#1a1a1a" stroke="#d4a017" stroke-width="1.8"/>
-      <text x="100" y="33" text-anchor="middle" font-family="'Arial Black','Impact','Franklin Gothic Heavy',sans-serif" font-size="24" font-weight="900" fill="url(#lg1)" letter-spacing="2">GAMEPROS</text>
-    </svg>
-  </div>
+<!-- LOADING -->
+<div id="loading-screen">
+  <svg width="190" height="54" viewBox="0 0 200 56" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="lg0" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f5d060"/><stop offset="50%" stop-color="#d4a017"/><stop offset="100%" stop-color="#8a6200"/></linearGradient></defs>
+    <path d="M6,3 L194,3 Q198,3 198,7 L198,36 Q170,50 100,52 Q30,50 2,36 L2,7 Q2,3 6,3 Z" fill="#1a1a1a" stroke="#d4a017" stroke-width="1.8"/>
+    <text x="100" y="33" text-anchor="middle" font-family="'Arial Black','Impact',sans-serif" font-size="24" font-weight="900" fill="url(#lg0)" letter-spacing="2">GAMEPROS</text>
+  </svg>
+  <div class="ld-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div>
+  <div class="ld-text" id="ld-text">Connecting to cloud...</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" class="hidden">
+  <svg width="190" height="54" viewBox="0 0 200 56" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f5d060"/><stop offset="50%" stop-color="#d4a017"/><stop offset="100%" stop-color="#8a6200"/></linearGradient></defs>
+    <path d="M6,3 L194,3 Q198,3 198,7 L198,36 Q170,50 100,52 Q30,50 2,36 L2,7 Q2,3 6,3 Z" fill="#1a1a1a" stroke="#d4a017" stroke-width="1.8"/>
+    <text x="100" y="33" text-anchor="middle" font-family="'Arial Black','Impact',sans-serif" font-size="24" font-weight="900" fill="url(#lg1)" letter-spacing="2">GAMEPROS</text>
+  </svg>
   <div class="login-tagline">Tournament Manager</div>
-
   <div class="login-card">
-    <div class="login-title">Admin Login</div>
-    <div class="login-sub">Enter your 4-digit PIN to continue</div>
-
+    <div class="login-title">Enter PIN to access</div>
+    <div class="login-sub" id="login-sub">Enter your personal 4-digit PIN</div>
     <div class="pin-dots" id="pin-dots">
-      <div class="pin-dot" id="pd0"></div>
-      <div class="pin-dot" id="pd1"></div>
-      <div class="pin-dot" id="pd2"></div>
-      <div class="pin-dot" id="pd3"></div>
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
     </div>
-
     <div class="numpad">
-      <button class="num-btn" onclick="pinKey('1')">1</button>
-      <button class="num-btn" onclick="pinKey('2')">2</button>
-      <button class="num-btn" onclick="pinKey('3')">3</button>
-      <button class="num-btn" onclick="pinKey('4')">4</button>
-      <button class="num-btn" onclick="pinKey('5')">5</button>
-      <button class="num-btn" onclick="pinKey('6')">6</button>
-      <button class="num-btn" onclick="pinKey('7')">7</button>
-      <button class="num-btn" onclick="pinKey('8')">8</button>
-      <button class="num-btn" onclick="pinKey('9')">9</button>
-      <div class="num-btn empty"></div>
-      <button class="num-btn" onclick="pinKey('0')">0</button>
-      <button class="num-btn del" onclick="pinDel()">⌫</button>
+      <button class="num-btn" onclick="pinKey('1')">1</button><button class="num-btn" onclick="pinKey('2')">2</button><button class="num-btn" onclick="pinKey('3')">3</button>
+      <button class="num-btn" onclick="pinKey('4')">4</button><button class="num-btn" onclick="pinKey('5')">5</button><button class="num-btn" onclick="pinKey('6')">6</button>
+      <button class="num-btn" onclick="pinKey('7')">7</button><button class="num-btn" onclick="pinKey('8')">8</button><button class="num-btn" onclick="pinKey('9')">9</button>
+      <div class="num-btn empty"></div><button class="num-btn" onclick="pinKey('0')">0</button><button class="num-btn del" onclick="pinDel()">⌫</button>
     </div>
-
     <div class="login-error" id="login-error"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════
-     CHANGE PIN MODAL
-═══════════════════════════════════════════════ -->
-<div class="modal-overlay hidden" id="change-pin-modal">
+<!-- CHANGE PIN MODAL -->
+<div class="modal-overlay hidden" id="modal-changepin">
   <div class="modal-box">
-    <div class="modal-title">🔐 Change Admin PIN</div>
-    <input type="password" id="cp-current" placeholder="Current PIN (4 digits)" maxlength="4" inputmode="numeric" />
-    <input type="password" id="cp-new"     placeholder="New PIN (4 digits)"     maxlength="4" inputmode="numeric" />
-    <input type="password" id="cp-confirm" placeholder="Confirm new PIN"        maxlength="4" inputmode="numeric" />
+    <div class="modal-title">🔐 Change My PIN</div>
+    <label>Current PIN</label><input type="password" id="cp-cur" maxlength="4" inputmode="numeric" placeholder="Current PIN" />
+    <label>New PIN</label><input type="password" id="cp-new" maxlength="4" inputmode="numeric" placeholder="New 4-digit PIN" />
+    <label>Confirm New PIN</label><input type="password" id="cp-cnf" maxlength="4" inputmode="numeric" placeholder="Confirm PIN" />
     <div class="modal-row">
-      <button class="btn-modal-cancel" onclick="closePinModal()">Cancel</button>
-      <button class="btn-modal-ok"     onclick="saveNewPin()">Save PIN</button>
+      <button class="btn-mo dark" onclick="closeModal('modal-changepin')">Cancel</button>
+      <button class="btn-mo gold" onclick="saveMyPin()">Save PIN</button>
     </div>
-    <div class="login-error" id="pin-change-error" style="margin-top:8px"></div>
+    <div class="login-error" id="cp-err" style="margin-top:8px"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════
-     CONTACT PICKER SHEET
-═══════════════════════════════════════════════ -->
+<!-- ADMIN: EDIT USER MODAL -->
+<div class="modal-overlay hidden" id="modal-edituser">
+  <div class="modal-box">
+    <div class="modal-title" id="eu-title">Edit User</div>
+    <input type="hidden" id="eu-uid" />
+    <label>Name</label><input type="text" id="eu-name" placeholder="User's name" />
+    <label>PIN (4 digits)</label><input type="text" id="eu-pin" maxlength="4" inputmode="numeric" placeholder="e.g. 2222" />
+    <label>Role</label>
+    <select id="eu-role" style="margin-bottom:10px">
+      <option value="user">User (can add/view matches)</option>
+      <option value="admin">Admin (full access)</option>
+    </select>
+    <div class="modal-row">
+      <button class="btn-mo dark" onclick="closeModal('modal-edituser')">Cancel</button>
+      <button class="btn-mo gold" onclick="saveUser()">Save</button>
+    </div>
+    <div class="login-error" id="eu-err" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<!-- CONTACT PICKER -->
 <div class="contact-overlay hidden" id="contact-overlay">
   <div class="contact-sheet">
     <div class="contact-handle"></div>
@@ -273,32 +284,23 @@
       <h3>Select Contact</h3>
       <input class="contact-search" id="contact-search" type="search" placeholder="Search name or number..." oninput="filterContacts()" />
     </div>
-    <button class="contact-api-btn" id="contact-api-btn" onclick="pickFromDevice()">📱 Import from Phone Contacts</button>
+    <button class="contact-api-btn" onclick="pickFromDevice()">📱 Import from Phone Contacts</button>
     <div class="contact-list" id="contact-list"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════
-     MAIN APP
-═══════════════════════════════════════════════ -->
+<!-- MAIN APP -->
 <div id="app">
 
 <div class="header">
-  <div class="logo-wrap">
-    <svg class="logo-svg" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#f5d060"/>
-          <stop offset="50%" stop-color="#d4a017"/>
-          <stop offset="100%" stop-color="#8a6200"/>
-        </linearGradient>
-      </defs>
-      <path d="M6,2 L194,2 Q198,2 198,6 L198,32 Q170,44 100,46 Q30,44 2,32 L2,6 Q2,2 6,2 Z" fill="#1a1a1a" stroke="#d4a017" stroke-width="1.8"/>
-      <text x="100" y="30" text-anchor="middle" font-family="'Arial Black','Impact','Franklin Gothic Heavy',sans-serif" font-size="24" font-weight="900" fill="url(#g1)" letter-spacing="2">GAMEPROS</text>
-    </svg>
-  </div>
+  <svg class="logo-svg" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f5d060"/><stop offset="50%" stop-color="#d4a017"/><stop offset="100%" stop-color="#8a6200"/></linearGradient></defs>
+    <path d="M6,2 L194,2 Q198,2 198,6 L198,32 Q170,44 100,46 Q30,44 2,32 L2,6 Q2,2 6,2 Z" fill="#1a1a1a" stroke="#d4a017" stroke-width="1.8"/>
+    <text x="100" y="30" text-anchor="middle" font-family="'Arial Black','Impact',sans-serif" font-size="24" font-weight="900" fill="url(#g1)" letter-spacing="2">GAMEPROS</text>
+  </svg>
   <div class="header-right">
-    <span>🏏</span>
+    <div class="sync-dot off" id="sync-dot"></div>
+    <div class="logged-as">Hi, <span id="logged-name">—</span></div>
     <button class="btn-logout" onclick="logout()">Logout</button>
   </div>
 </div>
@@ -308,7 +310,8 @@
   <button class="tab" onclick="switchTab('matches',this)">Matches</button>
   <button class="tab" onclick="switchTab('teams',this)">Teams</button>
   <button class="tab" onclick="switchTab('summary',this)">Summary</button>
-  <button class="tab" onclick="switchTab('settings',this)">⚙️</button>
+  <button class="tab admin-only" onclick="switchTab('users',this)">👥 Users</button>
+  <button class="tab admin-only" onclick="switchTab('settings',this)">⚙️</button>
 </div>
 
 <div class="bottom-nav">
@@ -316,99 +319,52 @@
   <button class="nav-btn" onclick="switchTab('matches',this)"><span class="nav-icon">🏏</span><span class="nav-label">Matches</span></button>
   <button class="nav-btn" onclick="switchTab('teams',this)"><span class="nav-icon">👥</span><span class="nav-label">Teams</span></button>
   <button class="nav-btn" onclick="switchTab('summary',this)"><span class="nav-icon">📊</span><span class="nav-label">Summary</span></button>
-  <button class="nav-btn" onclick="switchTab('settings',this)"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></button>
+  <button class="nav-btn admin-nav" onclick="switchTab('users',this)"><span class="nav-icon">🔑</span><span class="nav-label">Users</span></button>
+  <button class="nav-btn admin-nav" onclick="switchTab('settings',this)"><span class="nav-icon">⚙️</span><span class="nav-label">Admin</span></button>
 </div>
 
-<!-- ADD MATCH -->
+<!-- ADD -->
 <div id="sec-add" class="section active">
   <div class="card">
     <div class="card-title">Match Details</div>
-    <div class="field">
-      <label>Tournament Name</label>
-      <input id="f-tournament" type="text" placeholder="e.g. GamePros Summer Cup 2026" />
-    </div>
+    <div class="field"><label>Tournament Name</label><input id="f-tournament" type="text" placeholder="e.g. GamePros Cup 2026" /></div>
     <div class="field-row">
-      <div class="field">
-        <label>Date</label>
-        <input id="f-date" type="date" />
-      </div>
-      <div class="field">
-        <label>Ground / Venue</label>
-        <input id="f-ground" type="text" placeholder="Ground name" />
-      </div>
+      <div class="field"><label>Date</label><input id="f-date" type="date" /></div>
+      <div class="field"><label>Ground / Venue</label><input id="f-ground" type="text" placeholder="Ground name" /></div>
     </div>
     <div class="field-row3">
-      <div class="field">
-        <label>Format</label>
-        <select id="f-type">
-          <option>T10</option><option>T20</option><option>ODI</option><option>Box Cricket</option><option>40 Overs</option>
-        </select>
+      <div class="field"><label>Format</label>
+        <select id="f-type"><option>T10</option><option>T20</option><option>ODI</option><option>Box Cricket</option><option>40 Overs</option></select>
       </div>
-      <div class="field">
-        <label>Day / Night</label>
-        <select id="f-daynight">
-          <option value="Day">☀️ Day</option>
-          <option value="Night">🌙 Night</option>
-          <option value="Day-Night">🌅 D/N</option>
-        </select>
+      <div class="field"><label>Day/Night</label>
+        <select id="f-daynight"><option value="Day">☀️ Day</option><option value="Night">🌙 Night</option><option value="Day-Night">🌅 D/N</option></select>
       </div>
-      <div class="field">
-        <label>Ball</label>
-        <select id="f-ball">
-          <option value="Red">🔴 Red</option>
-          <option value="White">⚪ White</option>
-          <option value="Pink">🩷 Pink</option>
-        </select>
+      <div class="field"><label>Ball</label>
+        <select id="f-ball"><option value="Red">🔴 Red</option><option value="White">⚪ White</option><option value="Pink">🩷 Pink</option></select>
       </div>
     </div>
     <div class="divider"></div>
     <div class="field-row">
-      <div class="field">
-        <label>Team A</label>
-        <select id="f-teamA" onchange="autofillCaptain('A')"><option value="">Select team</option></select>
-      </div>
-      <div class="field">
-        <label>Team B</label>
-        <select id="f-teamB" onchange="autofillCaptain('B')"><option value="">Select team</option></select>
-      </div>
+      <div class="field"><label>Team A</label><select id="f-teamA" onchange="autofillCaptain('A')"><option value="">Select team</option></select></div>
+      <div class="field"><label>Team B</label><select id="f-teamB" onchange="autofillCaptain('B')"><option value="">Select team</option></select></div>
     </div>
-
-    <!-- Captain A with contact picker -->
-    <div class="field">
-      <label>Captain A – Phone / WhatsApp</label>
-      <div class="cap-input-row">
-        <input id="f-capA" type="tel" placeholder="+91 98765 43210" />
-        <button class="btn-contact" onclick="openContacts('f-capA')" title="Pick from contacts">👤 Contacts</button>
-      </div>
+    <div class="field"><label>Captain A Phone</label>
+      <div class="cap-row"><input id="f-capA" type="tel" placeholder="+91 98765 43210" /><button class="btn-contact" onclick="openContacts('f-capA')">👤 Contacts</button></div>
     </div>
-    <!-- Captain B with contact picker -->
-    <div class="field">
-      <label>Captain B – Phone / WhatsApp</label>
-      <div class="cap-input-row">
-        <input id="f-capB" type="tel" placeholder="+91 98765 43210" />
-        <button class="btn-contact" onclick="openContacts('f-capB')" title="Pick from contacts">👤 Contacts</button>
-      </div>
+    <div class="field"><label>Captain B Phone</label>
+      <div class="cap-row"><input id="f-capB" type="tel" placeholder="+91 98765 43210" /><button class="btn-contact" onclick="openContacts('f-capB')">👤 Contacts</button></div>
     </div>
-
-    <div class="field">
-      <label>Amount (₹) per team</label>
-      <input id="f-amount" type="number" placeholder="500" inputmode="numeric" />
-    </div>
+    <div class="field"><label>Amount (₹) per team</label><input id="f-amount" type="number" placeholder="500" inputmode="numeric" /></div>
     <button class="btn btn-gold" onclick="addMatch()">➕ Add Match</button>
   </div>
-
   <div class="card">
     <div class="card-title">Add New Team</div>
     <div class="field-row">
       <div class="field"><label>Team Name</label><input id="nt-name" type="text" placeholder="Team name" /></div>
-      <div class="field"><label>Captain Name</label><input id="nt-captain" type="text" placeholder="Captain name" /></div>
+      <div class="field"><label>Captain Name</label><input id="nt-captain" type="text" placeholder="Captain" /></div>
     </div>
-    <div class="field">
-      <label>Captain WhatsApp Number</label>
-      <div class="cap-input-row">
-        <input id="nt-phone" type="tel" placeholder="+91 98765 43210" inputmode="tel" />
-        <button class="btn-contact" onclick="openContacts('nt-phone')" title="Pick from contacts">👤 Contacts</button>
-      </div>
+    <div class="field"><label>Captain WhatsApp</label>
+      <div class="cap-row"><input id="nt-phone" type="tel" placeholder="+91 98765 43210" inputmode="tel" /><button class="btn-contact" onclick="openContacts('nt-phone')">👤 Contacts</button></div>
     </div>
     <button class="btn btn-gold" onclick="addTeam()">💾 Save Team</button>
   </div>
@@ -437,424 +393,400 @@
   <div class="card"><div class="card-title">Pending Payments</div><div id="pending-list"></div></div>
   <button class="btn btn-wa" onclick="pingAllUnpaid()">📲 Ping ALL Unpaid Captains</button>
   <div style="height:8px"></div>
-  <button class="btn btn-excel" onclick="exportCSV()">📥 Download Full Excel Report</button>
+  <button class="btn btn-excel" onclick="exportCSV()">📥 Download Excel Report</button>
 </div>
 
-<!-- SETTINGS -->
+<!-- USERS (admin only) -->
+<div id="sec-users" class="section">
+  <div class="card">
+    <div class="card-title">Access Control — All Users</div>
+    <div id="users-list"></div>
+    <button class="btn btn-gold" style="margin-top:12px" onclick="openAddUser()">➕ Add New User</button>
+  </div>
+  <div class="card" style="background:#111;border-color:#333">
+    <div style="color:#666;font-size:12px;line-height:1.9">
+      <div style="color:var(--gold);font-weight:800;font-size:13px;margin-bottom:6px">👑 Admin vs 👤 User</div>
+      <b style="color:#aaa">Admin:</b> Can add/delete matches, manage teams, change PINs, manage users<br>
+      <b style="color:#aaa">User:</b> Can add matches, update results, view data — cannot delete or manage users
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS (admin only) -->
 <div id="sec-settings" class="section">
   <div class="card">
-    <div class="card-title">Admin Settings</div>
+    <div class="card-title">My Account</div>
     <div class="settings-row">
-      <div>
-        <div class="settings-label">🔐 Change PIN</div>
-        <div class="settings-sub">Update your 4-digit admin login PIN</div>
-      </div>
-      <button class="btn-xs" style="background:#111;color:#d4a017;border-color:#d4a017" onclick="openPinModal()">Change</button>
+      <div><div class="s-label">🔐 Change My PIN</div><div class="s-sub">Update your personal login PIN</div></div>
+      <button class="btn-xs" style="background:#111;color:#d4a017;border-color:#d4a017" onclick="openChangePin()">Change</button>
     </div>
     <div class="settings-row">
-      <div>
-        <div class="settings-label">📱 Import Phone Contacts</div>
-        <div class="settings-sub">Sync contacts for quick captain selection</div>
-      </div>
+      <div><div class="s-label">📱 Import Phone Contacts</div><div class="s-sub">Sync for captain quick-select</div></div>
       <button class="btn-xs success" onclick="loadDeviceContacts()">Sync</button>
     </div>
     <div class="settings-row">
-      <div>
-        <div class="settings-label" id="contact-count-label">📇 Saved Contacts</div>
-        <div class="settings-sub">Contacts stored for quick pick</div>
-      </div>
+      <div><div class="s-label" id="contact-count-label">📇 Saved Contacts</div><div class="s-sub">Stored for quick pick</div></div>
       <button class="btn-xs danger" onclick="clearContacts()">Clear</button>
     </div>
   </div>
-
   <div class="card">
-    <div class="card-title">Data Management</div>
+    <div class="card-title">Data (Admin)</div>
     <div class="settings-row">
-      <div>
-        <div class="settings-label">📥 Export All Data</div>
-        <div class="settings-sub">Download CSV with all match records</div>
-      </div>
+      <div><div class="s-label">☁️ Sync Status</div><div class="s-sub" id="sync-status-text">Connecting...</div></div>
+      <div class="sync-dot off" id="sync-dot2"></div>
+    </div>
+    <div class="settings-row">
+      <div><div class="s-label">📥 Export All Data</div><div class="s-sub">Download CSV</div></div>
       <button class="btn-xs success" onclick="exportCSV()">Export</button>
     </div>
     <div class="settings-row">
-      <div>
-        <div class="settings-label" style="color:#dc2626">🗑 Clear All Matches</div>
-        <div class="settings-sub">Delete all match records permanently</div>
-      </div>
+      <div><div class="s-label" style="color:#dc2626">🗑 Clear All Matches</div><div class="s-sub">Deletes for all users</div></div>
       <button class="btn-xs danger" onclick="clearAllMatches()">Clear</button>
     </div>
-    <div class="settings-row">
-      <div>
-        <div class="settings-label" style="color:#dc2626">⚠️ Factory Reset</div>
-        <div class="settings-sub">Delete all data including teams</div>
-      </div>
-      <button class="btn-xs danger" onclick="factoryReset()">Reset</button>
-    </div>
   </div>
-
-  <div class="card" style="background:#111;border-color:#333">
-    <div style="text-align:center;color:#666;font-size:12px;line-height:1.8">
-      <div style="color:var(--gold);font-weight:800;font-size:14px;margin-bottom:4px">GamePros Tournament Manager</div>
-      Version 2.0 &nbsp;·&nbsp; Admin Panel<br>
-      Logged in as: <span style="color:var(--gold);font-weight:700">Admin</span>
-    </div>
+  <div class="card" style="background:#111;border-color:#333;text-align:center">
+    <div style="color:var(--gold);font-weight:800;font-size:14px;margin-bottom:4px">GamePros Tournament Manager</div>
+    <div style="color:#555;font-size:12px;line-height:1.8">v3.1 · Firebase Sync · 4-User Access Control</div>
   </div>
 </div>
 
 </div><!-- end #app -->
-
 <div id="toast" class="toast"></div>
 
-<script>
-// ─── ADMIN AUTH ───────────────────────────────────────────────────────────────
-const DEFAULT_PIN = "1234";
+<!-- ═══════════════ FIREBASE ═══════════════ -->
+<script type="module">
+import { initializeApp }       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, addDoc, setDoc,
+         deleteDoc, onSnapshot, serverTimestamp,
+         query, orderBy, getDocs }
+                               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyAcAWp-chm0hnSZ1_-xgUd8fSa2TzAqHxg",
+  authDomain:        "gamepros-tournament.firebaseapp.com",
+  projectId:         "gamepros-tournament",
+  storageBucket:     "gamepros-tournament.firebasestorage.app",
+  messagingSenderId: "745992363404",
+  appId:             "1:745992363404:web:589c6d7fdb145db130caa9"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db    = getFirestore(fbApp);
+
+const matchesCol = collection(db, "matches");
+const teamsCol   = collection(db, "teams");
+const usersCol   = collection(db, "users");   // stores PINs + roles
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let teams   = [];
+let matches = [];
+let users   = [];   // [{id, name, pin, role:'admin'|'user'}]
+let currentUser   = null;   // logged-in user object
+let currentFilter = "all";
+let allContacts   = JSON.parse(localStorage.getItem("gp_contacts") || "[]");
+let filteredContacts = [];
+let contactTargetField = "";
 let pinBuffer = "";
-let isLoggedIn = false;
+let unsubMatches=null, unsubTeams=null, unsubUsers=null;
 
-function getAdminPin() {
-  return localStorage.getItem("gp_pin") || DEFAULT_PIN;
+// ── DEFAULT USERS (seeded to Firestore on first run) ──────────────────────
+const DEFAULT_USERS = [
+  { id:"user_deepak", name:"Deepak",  pin:"1111", role:"admin" },
+  { id:"user_2",      name:"User 2",  pin:"2222", role:"user"  },
+  { id:"user_3",      name:"User 3",  pin:"3333", role:"user"  },
+  { id:"user_4",      name:"User 4",  pin:"4444", role:"user"  },
+];
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function showToast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),2800); }
+window.showToast=showToast;
+function setSyncStatus(s){
+  ["sync-dot","sync-dot2"].forEach(id=>{ const d=document.getElementById(id); if(d){ d.className="sync-dot "+(s==="online"?"":s==="syncing"?"syncing":"off"); } });
+  const st=document.getElementById("sync-status-text"); if(st) st.textContent=s==="online"?"✅ Connected — real-time sync active":s==="syncing"?"⏳ Syncing...":"❌ Offline";
 }
+window.closeModal=function(id){ document.getElementById(id).classList.add("hidden"); };
+function openModal(id){ document.getElementById(id).classList.remove("hidden"); }
 
-function pinKey(k) {
-  if (pinBuffer.length >= 4) return;
-  pinBuffer += k;
-  updatePinDots();
-  if (pinBuffer.length === 4) {
-    setTimeout(checkPin, 150);
+// ── SEED DEFAULT USERS TO FIRESTORE (if not exist) ────────────────────────
+async function seedUsersIfNeeded(){
+  const snap = await getDocs(usersCol);
+  if(snap.empty){
+    for(const u of DEFAULT_USERS){
+      await setDoc(doc(db,"users",u.id),{name:u.name,pin:u.pin,role:u.role,createdAt:serverTimestamp()});
+    }
   }
 }
 
-function pinDel() {
-  if (pinBuffer.length > 0) {
-    pinBuffer = pinBuffer.slice(0, -1);
-    updatePinDots();
-  }
-  document.getElementById("login-error").textContent = "";
+// ── START REAL-TIME LISTENERS ─────────────────────────────────────────────
+function startListeners(){
+  setSyncStatus("syncing");
+  unsubUsers = onSnapshot(query(usersCol,orderBy("name")), snap=>{
+    users=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(document.getElementById("sec-users").classList.contains("active")) renderUsers();
+  });
+  unsubTeams = onSnapshot(query(teamsCol,orderBy("name")), snap=>{
+    teams=snap.docs.map(d=>({id:d.id,...d.data()}));
+    populateTeamDropdowns();
+    if(document.getElementById("sec-teams").classList.contains("active")) renderTeams();
+  });
+  unsubMatches = onSnapshot(query(matchesCol,orderBy("createdAt","desc")), snap=>{
+    matches=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(document.getElementById("sec-matches").classList.contains("active")) renderMatches();
+    if(document.getElementById("sec-summary").classList.contains("active")) renderSummary();
+    setSyncStatus("online");
+  }, ()=>setSyncStatus("offline"));
+}
+function stopListeners(){
+  [unsubMatches,unsubTeams,unsubUsers].forEach(u=>{ if(u)u(); });
+  unsubMatches=unsubTeams=unsubUsers=null;
 }
 
-function updatePinDots() {
-  for (let i = 0; i < 4; i++) {
-    document.getElementById("pd" + i).classList.toggle("filled", i < pinBuffer.length);
-  }
-}
+// ── INIT: load users then show login ─────────────────────────────────────
+(async ()=>{
+  document.getElementById("ld-text").textContent="Loading user list...";
+  try {
+    await seedUsersIfNeeded();
+    const snap=await getDocs(usersCol);
+    users=snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e){ console.warn(e); }
+  document.getElementById("loading-screen").classList.add("hidden");
+  document.getElementById("login-screen").classList.remove("hidden");
+})();
 
-function checkPin() {
-  if (pinBuffer === getAdminPin()) {
-    isLoggedIn = true;
+// ── PIN LOGIN ─────────────────────────────────────────────────────────────
+window.pinKey=function(k){
+  if(pinBuffer.length>=4)return;
+  pinBuffer+=k; updatePinDots();
+  if(pinBuffer.length===4) setTimeout(checkPin,150);
+};
+window.pinDel=function(){ pinBuffer=pinBuffer.slice(0,-1); updatePinDots(); document.getElementById("login-error").textContent=""; };
+function updatePinDots(){ for(let i=0;i<4;i++) document.getElementById("pd"+i).classList.toggle("filled",i<pinBuffer.length); }
+
+function checkPin(){
+  const matched=users.find(u=>u.pin===pinBuffer);
+  if(matched){
+    currentUser=matched;
     document.getElementById("login-screen").classList.add("hidden");
     document.getElementById("app").classList.add("visible");
-    document.getElementById("login-error").textContent = "";
-    showToast("Welcome back, Admin! 👑");
+    document.getElementById("logged-name").textContent=matched.name;
+    applyRoleUI(matched.role);
+    startListeners();
+    document.getElementById("f-date").value=new Date().toISOString().slice(0,10);
+    updateContactCount();
+    showToast("Welcome, "+matched.name+"! "+(matched.role==="admin"?"👑":"👤"));
   } else {
-    document.getElementById("login-error").textContent = "❌ Wrong PIN. Try again.";
-    // shake animation
-    const dots = document.getElementById("pin-dots");
-    dots.style.animation = "none";
-    dots.offsetHeight;
-    pinBuffer = "";
-    updatePinDots();
-    // flash dots red briefly
-    for (let i = 0; i < 4; i++) {
-      const d = document.getElementById("pd" + i);
-      d.style.background = "#ef4444"; d.style.borderColor = "#ef4444";
-      setTimeout(() => { d.style.background=""; d.style.borderColor=""; }, 600);
+    document.getElementById("login-error").textContent="❌ Wrong PIN. Access denied.";
+    pinBuffer=""; updatePinDots();
+    for(let i=0;i<4;i++){
+      const d=document.getElementById("pd"+i);
+      d.style.background="#ef4444";d.style.borderColor="#ef4444";
+      setTimeout(()=>{d.style.background="";d.style.borderColor="";},600);
     }
   }
 }
 
-function logout() {
-  if (!confirm("Log out of GamePros admin?")) return;
-  isLoggedIn = false;
-  pinBuffer = "";
-  updatePinDots();
-  document.getElementById("login-screen").classList.remove("hidden");
+function applyRoleUI(role){
+  const isAdmin=(role==="admin");
+  document.querySelectorAll(".admin-only").forEach(el=>el.classList.toggle("show",isAdmin));
+  document.querySelectorAll(".admin-nav").forEach(el=>el.classList.toggle("show",isAdmin));
+}
+
+window.logout=function(){
+  if(!confirm("Log out?"))return;
+  currentUser=null; pinBuffer=""; updatePinDots();
+  stopListeners(); setSyncStatus("offline");
   document.getElementById("app").classList.remove("visible");
-  document.getElementById("login-error").textContent = "";
-}
+  document.getElementById("login-screen").classList.remove("hidden");
+  document.getElementById("login-error").textContent="";
+  // reset tabs
+  document.querySelectorAll(".tab,.nav-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById("sec-add").classList.add("active");
+  document.querySelector(".tab").classList.add("active");
+  document.querySelector(".nav-btn").classList.add("active");
+};
 
-// Change PIN modal
-function openPinModal() {
-  document.getElementById("change-pin-modal").classList.remove("hidden");
-  ["cp-current","cp-new","cp-confirm"].forEach(id=>document.getElementById(id).value="");
-  document.getElementById("pin-change-error").textContent="";
-}
-function closePinModal() {
-  document.getElementById("change-pin-modal").classList.add("hidden");
-}
-function saveNewPin() {
-  const cur = document.getElementById("cp-current").value.trim();
-  const nw  = document.getElementById("cp-new").value.trim();
-  const cnf = document.getElementById("cp-confirm").value.trim();
-  const err = document.getElementById("pin-change-error");
-  if (cur !== getAdminPin())  { err.textContent="❌ Current PIN is wrong"; return; }
-  if (!/^\d{4}$/.test(nw))   { err.textContent="❌ PIN must be exactly 4 digits"; return; }
-  if (nw !== cnf)             { err.textContent="❌ New PINs do not match"; return; }
-  localStorage.setItem("gp_pin", nw);
-  closePinModal();
-  showToast("✅ PIN changed successfully!");
-}
-
-// Keyboard support for PIN entry
-document.addEventListener("keydown", e => {
-  if (!isLoggedIn && /^[0-9]$/.test(e.key)) pinKey(e.key);
-  if (!isLoggedIn && e.key === "Backspace") pinDel();
-  if (!isLoggedIn && e.key === "Enter" && pinBuffer.length === 4) checkPin();
+document.addEventListener("keydown",e=>{
+  if(!currentUser&&/^[0-9]$/.test(e.key)) window.pinKey(e.key);
+  if(!currentUser&&e.key==="Backspace") window.pinDel();
 });
 
-// ─── CONTACTS ─────────────────────────────────────────────────────────────────
-let allContacts = JSON.parse(localStorage.getItem("gp_contacts") || "[]");
-let contactTargetField = "";
-let filteredContacts = [];
+// ── CHANGE MY OWN PIN ─────────────────────────────────────────────────────
+window.openChangePin=function(){ openModal("modal-changepin"); ["cp-cur","cp-new","cp-cnf"].forEach(id=>document.getElementById(id).value=""); document.getElementById("cp-err").textContent=""; };
+window.saveMyPin=async function(){
+  const cur=document.getElementById("cp-cur").value.trim();
+  const nw =document.getElementById("cp-new").value.trim();
+  const cnf=document.getElementById("cp-cnf").value.trim();
+  const err=document.getElementById("cp-err");
+  if(cur!==currentUser.pin){err.textContent="❌ Current PIN wrong";return;}
+  if(!/^\d{4}$/.test(nw)){err.textContent="❌ PIN must be 4 digits";return;}
+  if(nw!==cnf){err.textContent="❌ PINs do not match";return;}
+  try{
+    await setDoc(doc(db,"users",currentUser.id),{pin:nw},{merge:true});
+    currentUser.pin=nw;
+    window.closeModal("modal-changepin");
+    showToast("✅ PIN changed!");
+  }catch(e){err.textContent="❌ "+e.message;}
+};
 
-function updateContactCount() {
-  const el = document.getElementById("contact-count-label");
-  if (el) el.textContent = `📇 Saved Contacts (${allContacts.length})`;
-}
-
-async function loadDeviceContacts() {
-  if (!("contacts" in navigator && "ContactsManager" in window)) {
-    showToast("Contact API not supported — use Import in picker");
-    return;
-  }
-  try {
-    const c = await navigator.contacts.select(["name","tel"], {multiple: true});
-    const imported = [];
-    c.forEach(ct => {
-      if (ct.tel && ct.tel.length > 0) {
-        ct.tel.forEach(num => {
-          const clean = num.replace(/\D/g,"");
-          if (clean.length >= 7) {
-            imported.push({ name: (ct.name && ct.name[0]) || "Unknown", phone: clean });
-          }
-        });
-      }
-    });
-    if (imported.length) {
-      // Merge without duplicates
-      const existing = new Set(allContacts.map(c=>c.phone));
-      imported.forEach(c => { if (!existing.has(c.phone)) allContacts.push(c); });
-      allContacts.sort((a,b)=>a.name.localeCompare(b.name));
-      localStorage.setItem("gp_contacts", JSON.stringify(allContacts));
-      updateContactCount();
-      showToast(`✅ Imported ${imported.length} contacts!`);
-    } else {
-      showToast("No contacts selected");
-    }
-  } catch(e) {
-    showToast("Contact access denied or cancelled");
-  }
-}
-
-function openContacts(fieldId) {
-  contactTargetField = fieldId;
-  filteredContacts = [...allContacts];
-  document.getElementById("contact-search").value = "";
-  renderContactList();
-  document.getElementById("contact-overlay").classList.remove("hidden");
-  setTimeout(() => document.getElementById("contact-search").focus(), 200);
-  // Show/hide API button based on support
-  const hasApi = ("contacts" in navigator && "ContactsManager" in window);
-  document.getElementById("contact-api-btn").style.display = hasApi ? "block" : "none";
-}
-
-function closeContacts() {
-  document.getElementById("contact-overlay").classList.add("hidden");
-}
-
-function filterContacts() {
-  const q = document.getElementById("contact-search").value.toLowerCase();
-  filteredContacts = allContacts.filter(c =>
-    c.name.toLowerCase().includes(q) || c.phone.includes(q)
-  );
-  renderContactList();
-}
-
-function renderContactList() {
-  const list = document.getElementById("contact-list");
-  if (!allContacts.length) {
-    list.innerHTML = `<div class="contact-empty">
-      No contacts saved yet.<br><br>
-      Tap <b>"Import from Phone Contacts"</b> above (Android/Chrome)<br>
-      — or —<br>
-      Add contacts manually below.
-      <br><br>
-      <div style="padding:0 16px">
-        <input type="text" id="mc-name" placeholder="Contact name" style="margin-bottom:8px" />
-        <input type="tel" id="mc-phone" placeholder="+91 phone number" style="margin-bottom:10px" inputmode="tel" />
-        <button onclick="addManualContact()" style="width:100%;padding:10px;background:#d4a017;color:#111;border:none;border-radius:8px;font-weight:800;cursor:pointer;font-size:14px">Add Contact</button>
+// ── USERS MANAGEMENT (admin only) ─────────────────────────────────────────
+function renderUsers(){
+  const el=document.getElementById("users-list");
+  if(!users.length){el.innerHTML='<div class="empty">No users found.</div>';return;}
+  el.innerHTML=users.map(u=>`
+    <div class="user-row">
+      <div class="user-av">${u.role==="admin"?"👑":"👤"}</div>
+      <div style="flex:1">
+        <div class="user-name">${u.name}</div>
+        <span class="user-role ${u.role==="admin"?"role-admin":"role-user"}">${u.role}</span>
       </div>
-    </div>`;
-    return;
-  }
-  if (!filteredContacts.length) {
-    list.innerHTML = `<div class="contact-empty">No contacts match "<b>${document.getElementById("contact-search").value}</b>"<br><br>
-      <div style="padding:0 16px">
-        <input type="text" id="mc-name" placeholder="Add new: Name" style="margin-bottom:8px" />
-        <input type="tel" id="mc-phone" placeholder="Phone number" style="margin-bottom:10px" inputmode="tel" />
-        <button onclick="addManualContact()" style="width:100%;padding:10px;background:#d4a017;color:#111;border:none;border-radius:8px;font-weight:800;cursor:pointer;font-size:14px">Add & Select</button>
-      </div>
-    </div>`;
-    return;
-  }
-  list.innerHTML = filteredContacts.map(c => `
-    <div class="contact-item" onclick="selectContact('${c.phone.replace(/'/g,"\\'")}','${c.name.replace(/'/g,"\\'")}')">
-      <div class="contact-av">${c.name.trim().slice(0,2).toUpperCase()}</div>
-      <div>
-        <div class="contact-name">${c.name}</div>
-        <div class="contact-phone">+${c.phone}</div>
-      </div>
+      <div class="pin-display">****</div>
+      <button class="btn-xs" style="margin-left:8px" onclick="openEditUser('${u.id}')">✏️</button>
+      ${u.id!==currentUser.id?`<button class="btn-xs danger" style="margin-left:4px" onclick="deleteUser('${u.id}','${u.name.replace(/'/g,"\\'")}')">✕</button>`:''}
     </div>
   `).join("");
 }
 
-function selectContact(phone, name) {
-  if (contactTargetField) {
-    document.getElementById(contactTargetField).value = "+" + phone;
-  }
-  closeContacts();
-  showToast("📱 " + name + " selected");
-}
+window.openAddUser=function(){
+  document.getElementById("eu-title").textContent="➕ Add New User";
+  document.getElementById("eu-uid").value="";
+  ["eu-name","eu-pin"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("eu-role").value="user";
+  document.getElementById("eu-err").textContent="";
+  openModal("modal-edituser");
+};
 
-async function pickFromDevice() {
-  await loadDeviceContacts();
-  filteredContacts = [...allContacts];
+window.openEditUser=function(uid){
+  const u=users.find(x=>x.id===uid); if(!u)return;
+  document.getElementById("eu-title").textContent="✏️ Edit User";
+  document.getElementById("eu-uid").value=uid;
+  document.getElementById("eu-name").value=u.name;
+  document.getElementById("eu-pin").value=u.pin;
+  document.getElementById("eu-role").value=u.role;
+  document.getElementById("eu-err").textContent="";
+  openModal("modal-edituser");
+};
+
+window.saveUser=async function(){
+  const uid =document.getElementById("eu-uid").value.trim();
+  const name=document.getElementById("eu-name").value.trim();
+  const pin =document.getElementById("eu-pin").value.trim();
+  const role=document.getElementById("eu-role").value;
+  const err =document.getElementById("eu-err");
+  if(!name){err.textContent="❌ Enter a name";return;}
+  if(!/^\d{4}$/.test(pin)){err.textContent="❌ PIN must be exactly 4 digits";return;}
+  // check PIN not already used by another user
+  const conflict=users.find(u=>u.pin===pin&&u.id!==uid);
+  if(conflict){err.textContent="❌ PIN "+pin+" already used by "+conflict.name;return;}
+  try{
+    const docId=uid||"user_"+Date.now();
+    await setDoc(doc(db,"users",docId),{name,pin,role,createdAt:serverTimestamp()},{merge:true});
+    window.closeModal("modal-edituser");
+    showToast(uid?"✅ User updated!":"✅ User added!");
+  }catch(e){err.textContent="❌ "+e.message;}
+};
+
+window.deleteUser=async function(uid,name){
+  if(uid===currentUser.id){showToast("❌ Cannot delete yourself");return;}
+  if(!confirm("Remove "+name+"'s access? They won't be able to login."))return;
+  try{ await deleteDoc(doc(db,"users",uid)); showToast(name+" removed."); }
+  catch(e){showToast("❌ "+e.message);}
+};
+
+// ── CONTACTS ──────────────────────────────────────────────────────────────
+function updateContactCount(){ const el=document.getElementById("contact-count-label"); if(el) el.textContent=`📇 Saved Contacts (${allContacts.length})`; }
+window.openContacts=function(fid){
+  contactTargetField=fid; filteredContacts=[...allContacts];
+  document.getElementById("contact-search").value="";
   renderContactList();
+  document.getElementById("contact-overlay").classList.remove("hidden");
+};
+window.closeContacts=()=>document.getElementById("contact-overlay").classList.add("hidden");
+document.getElementById("contact-overlay").addEventListener("click",function(e){if(e.target===this)window.closeContacts();});
+window.filterContacts=function(){ const q=document.getElementById("contact-search").value.toLowerCase(); filteredContacts=allContacts.filter(c=>c.name.toLowerCase().includes(q)||c.phone.includes(q)); renderContactList(); };
+function renderContactList(){
+  const list=document.getElementById("contact-list");
+  if(!allContacts.length){ list.innerHTML=`<div class="contact-empty">No contacts yet.<br><br><div style="padding:0 16px"><input type="text" id="mc-name" placeholder="Name" style="margin-bottom:8px"/><input type="tel" id="mc-phone" placeholder="Phone" style="margin-bottom:10px" inputmode="tel"/><button onclick="addManualContact()" style="width:100%;padding:10px;background:#d4a017;color:#111;border:none;border-radius:8px;font-weight:800;cursor:pointer">Add Contact</button></div></div>`; return; }
+  if(!filteredContacts.length){ list.innerHTML=`<div class="contact-empty">No results.<br><br><div style="padding:0 16px"><input type="text" id="mc-name" placeholder="Name" style="margin-bottom:8px"/><input type="tel" id="mc-phone" placeholder="Phone" style="margin-bottom:10px" inputmode="tel"/><button onclick="addManualContact()" style="width:100%;padding:10px;background:#d4a017;color:#111;border:none;border-radius:8px;font-weight:800;cursor:pointer">Add & Select</button></div></div>`; return; }
+  list.innerHTML=filteredContacts.map(c=>`<div class="contact-item" onclick="selectContact('${c.phone.replace(/'/g,"\\'")}','${c.name.replace(/'/g,"\\'")}')"><div class="contact-av">${c.name.trim().slice(0,2).toUpperCase()}</div><div><div class="c-name">${c.name}</div><div class="c-phone">+${c.phone}</div></div></div>`).join("");
 }
+window.selectContact=function(phone,name){ if(contactTargetField)document.getElementById(contactTargetField).value="+"+phone; window.closeContacts(); showToast("📱 "+name+" selected"); };
+window.pickFromDevice=async function(){ await loadDeviceContacts(); filteredContacts=[...allContacts]; renderContactList(); };
+window.loadDeviceContacts=async function(){
+  if(!("contacts" in navigator&&"ContactsManager" in window)){showToast("Use Chrome on Android for contact import");return;}
+  try{
+    const c=await navigator.contacts.select(["name","tel"],{multiple:true}); let cnt=0;
+    c.forEach(ct=>{if(ct.tel)ct.tel.forEach(n=>{const p=n.replace(/\D/g,"");if(p.length>=7&&!allContacts.find(x=>x.phone===p)){allContacts.push({name:(ct.name&&ct.name[0])||"Unknown",phone:p});cnt++;}});});
+    if(cnt){allContacts.sort((a,b)=>a.name.localeCompare(b.name));localStorage.setItem("gp_contacts",JSON.stringify(allContacts));updateContactCount();showToast("✅ "+cnt+" contacts imported!");}
+    else showToast("No new contacts");
+  }catch(e){showToast("Contact access denied");}
+};
+window.addManualContact=function(){
+  const n=document.getElementById("mc-name"),p=document.getElementById("mc-phone"); if(!n||!p)return;
+  const name=n.value.trim(),phone=p.value.replace(/\D/g,"");
+  if(!name||phone.length<7){showToast("Enter valid name and phone");return;}
+  allContacts.push({name,phone}); allContacts.sort((a,b)=>a.name.localeCompare(b.name));
+  localStorage.setItem("gp_contacts",JSON.stringify(allContacts)); updateContactCount();
+  if(contactTargetField){document.getElementById(contactTargetField).value="+"+phone;window.closeContacts();showToast("✅ Saved & selected!");}
+  else{filteredContacts=[...allContacts];renderContactList();showToast("✅ Contact added!");}
+};
+window.clearContacts=function(){ if(!confirm("Clear all contacts?"))return; allContacts=[]; localStorage.setItem("gp_contacts","[]"); updateContactCount(); showToast("Contacts cleared"); };
 
-function addManualContact() {
-  const nameEl  = document.getElementById("mc-name");
-  const phoneEl = document.getElementById("mc-phone");
-  if (!nameEl || !phoneEl) return;
-  const name  = nameEl.value.trim();
-  const phone = phoneEl.value.replace(/\D/g,"");
-  if (!name || phone.length < 7) { showToast("Enter valid name and phone"); return; }
-  allContacts.push({ name, phone });
-  allContacts.sort((a,b) => a.name.localeCompare(b.name));
-  localStorage.setItem("gp_contacts", JSON.stringify(allContacts));
-  updateContactCount();
-  if (contactTargetField) {
-    document.getElementById(contactTargetField).value = "+" + phone;
-    closeContacts();
-    showToast("✅ Contact saved & selected!");
-  } else {
-    filteredContacts = [...allContacts];
-    renderContactList();
-    showToast("✅ Contact added!");
-  }
-}
-
-function clearContacts() {
-  if (!confirm("Clear all saved contacts?")) return;
-  allContacts = [];
-  localStorage.setItem("gp_contacts", JSON.stringify([]));
-  updateContactCount();
-  showToast("Contacts cleared");
-}
-
-// Close contact sheet when tapping overlay background
-document.getElementById("contact-overlay").addEventListener("click", function(e) {
-  if (e.target === this) closeContacts();
-});
-
-// ─── DATA ─────────────────────────────────────────────────────────────────────
-let teams   = JSON.parse(localStorage.getItem("gp_teams")   || "[]");
-let matches = JSON.parse(localStorage.getItem("gp_matches") || "[]");
-let nextId  = parseInt(localStorage.getItem("gp_nextId")    || "1");
-let currentFilter = "all";
-
-if (!teams.length) {
-  teams = [
-    { id:1, name:"Warriors XI",       captain:"Rahul Patil",  phone:"919876543210" },
-    { id:2, name:"Thunder Strikers",  captain:"Amit Shah",    phone:"919765432109" },
-    { id:3, name:"Royal Challengers", captain:"Vijay More",   phone:"919654321098" },
-    { id:4, name:"Super Kings",       captain:"Suresh Yadav", phone:"919543210987" }
-  ];
-  save();
-}
-
-function save() {
-  localStorage.setItem("gp_teams",   JSON.stringify(teams));
-  localStorage.setItem("gp_matches", JSON.stringify(matches));
-  localStorage.setItem("gp_nextId",  nextId);
-}
-
-// ─── UI ───────────────────────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg; t.classList.add("show");
-  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove("show"), 2600);
-}
-
-function switchTab(name, el) {
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────
+window.switchTab=function(name,el){
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-  document.querySelectorAll(".nav-btn, .tab").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".nav-btn,.tab").forEach(b=>b.classList.remove("active"));
   document.getElementById("sec-"+name).classList.add("active");
-  if (el) el.classList.add("active");
-  if (name==="matches")  renderMatches();
-  if (name==="teams")    renderTeams();
-  if (name==="summary")  renderSummary();
-  if (name==="settings") updateContactCount();
-}
+  if(el)el.classList.add("active");
+  if(name==="matches") renderMatches();
+  if(name==="teams")   renderTeams();
+  if(name==="summary") renderSummary();
+  if(name==="users")   renderUsers();
+  if(name==="settings")updateContactCount();
+};
 
-// ─── TEAMS ────────────────────────────────────────────────────────────────────
-function populateTeamDropdowns() {
+// ── TEAMS ─────────────────────────────────────────────────────────────────
+function populateTeamDropdowns(){
   ["f-teamA","f-teamB"].forEach(id=>{
-    const sel=document.getElementById(id), cur=sel.value;
-    sel.innerHTML='<option value="">Select team</option>';
-    teams.forEach(t=>{ const o=document.createElement("option"); o.value=t.name; o.textContent=t.name; sel.appendChild(o); });
+    const sel=document.getElementById(id); if(!sel)return;
+    const cur=sel.value; sel.innerHTML='<option value="">Select team</option>';
+    teams.forEach(t=>{const o=document.createElement("option");o.value=t.name;o.textContent=t.name;sel.appendChild(o);});
     sel.value=cur;
   });
 }
-
-function autofillCaptain(side) {
-  const t=teams.find(x=>x.name===document.getElementById("f-team"+side).value);
-  if (t) {
-    document.getElementById("f-cap"+side).value="+"+t.phone;
-    // Also try to find in contacts for name display
-  }
-}
-
-function addTeam() {
+window.autofillCaptain=function(side){ const t=teams.find(x=>x.name===document.getElementById("f-team"+side).value); if(t)document.getElementById("f-cap"+side).value="+"+t.phone; };
+window.addTeam=async function(){
   const name=document.getElementById("nt-name").value.trim();
   const captain=document.getElementById("nt-captain").value.trim();
   const phone=document.getElementById("nt-phone").value.replace(/\D/g,"");
-  if (!name||!captain){showToast("Fill team name and captain");return;}
-  if (teams.find(t=>t.name.toLowerCase()===name.toLowerCase())){showToast("Team already exists");return;}
-  teams.push({id:teams.length+1,name,captain,phone});
-  // Auto-add captain to contacts
-  if (phone.length>=7 && !allContacts.find(c=>c.phone===phone)) {
-    allContacts.push({name:captain, phone});
-    allContacts.sort((a,b)=>a.name.localeCompare(b.name));
-    localStorage.setItem("gp_contacts", JSON.stringify(allContacts));
-    updateContactCount();
-  }
-  save(); populateTeamDropdowns();
-  ["nt-name","nt-captain","nt-phone"].forEach(id=>document.getElementById(id).value="");
-  showToast("Team "+name+" saved!");
-}
-
-function deleteTeam(name) {
-  if (!confirm("Delete team "+name+"?")) return;
-  teams=teams.filter(t=>t.name!==name);
-  save(); renderTeams(); populateTeamDropdowns();
-}
-
-function renderTeams() {
+  if(!name||!captain){showToast("Fill team name and captain");return;}
+  if(teams.find(t=>t.name.toLowerCase()===name.toLowerCase())){showToast("Team already exists");return;}
+  setSyncStatus("syncing");
+  try{
+    await setDoc(doc(db,"teams",name.replace(/\s+/g,"_").toLowerCase()),{name,captain,phone,createdAt:serverTimestamp()});
+    if(phone.length>=7&&!allContacts.find(c=>c.phone===phone)){allContacts.push({name:captain,phone});allContacts.sort((a,b)=>a.name.localeCompare(b.name));localStorage.setItem("gp_contacts",JSON.stringify(allContacts));updateContactCount();}
+    ["nt-name","nt-captain","nt-phone"].forEach(id=>document.getElementById(id).value="");
+    showToast("✅ Team saved!");
+  }catch(e){showToast("❌ "+e.message);}
+};
+window.deleteTeam=async function(tid,name){
+  if(currentUser.role!=="admin"){showToast("❌ Admin only");return;}
+  if(!confirm("Delete team "+name+"?\nSynced — removes for all users."))return;
+  try{await deleteDoc(doc(db,"teams",tid));showToast("Team deleted");}catch(e){showToast("❌ "+e.message);}
+};
+function renderTeams(){
   const el=document.getElementById("teams-list");
-  if (!teams.length){el.innerHTML='<div class="empty">No teams yet.</div>';return;}
+  if(!teams.length){el.innerHTML='<div class="empty">No teams yet.</div>';return;}
+  const isAdmin=currentUser&&currentUser.role==="admin";
   el.innerHTML=`<div class="card-title">All Teams (${teams.length})</div>`+teams.map(t=>{
     const owed=matches.filter(m=>m.status==="unpaid"&&(m.teamA===t.name||m.teamB===t.name)).reduce((s,m)=>s+m.amount,0);
-    return `<div class="team-row">
-      <div class="avatar">${t.name.slice(0,2).toUpperCase()}</div>
-      <div style="flex:1"><div class="team-name">${t.name}</div><div class="team-sub">👤 ${t.captain} · 📱 +${t.phone}</div></div>
-      ${owed>0?`<div class="owed">₹${owed} due</div>`:'<div class="clear-tag">✓ Clear</div>'}
-      <button class="btn-xs danger" style="margin-left:8px" onclick="deleteTeam('${t.name.replace(/'/g,"\\'")}')">✕</button>
+    return `<div class="team-row"><div class="avatar">${t.name.slice(0,2).toUpperCase()}</div><div style="flex:1"><div class="team-name">${t.name}</div><div class="team-sub">👤 ${t.captain} · 📱 +${t.phone}</div></div>${owed>0?`<div class="owed">₹${owed} due</div>`:'<div class="clear-tag">✓ Clear</div>'}${isAdmin?`<button class="btn-xs danger" style="margin-left:8px" onclick="deleteTeam('${t.id}','${t.name.replace(/'/g,"\\'")}')">✕</button>`:''}
     </div>`;
   }).join("");
 }
 
-// ─── MATCHES ──────────────────────────────────────────────────────────────────
-function addMatch() {
+// ── MATCHES ───────────────────────────────────────────────────────────────
+window.addMatch=async function(){
   const tournament=document.getElementById("f-tournament").value.trim();
   const date=document.getElementById("f-date").value;
   const ground=document.getElementById("f-ground").value.trim();
@@ -866,32 +798,34 @@ function addMatch() {
   const type=document.getElementById("f-type").value;
   const daynight=document.getElementById("f-daynight").value;
   const ball=document.getElementById("f-ball").value;
-  if (!tournament){showToast("Enter tournament name");return;}
-  if (!date){showToast("Select date");return;}
-  if (!teamA||!teamB){showToast("Select both teams");return;}
-  if (teamA===teamB){showToast("Teams must be different");return;}
-  if (amount<=0){showToast("Enter valid amount");return;}
-  matches.push({id:nextId++,tournament,date,ground,teamA,teamB,capAPhone,capBPhone,amount,type,daynight,ball,status:"pending",winner:"",scoreA:"",scoreB:"",createdAt:new Date().toISOString()});
-  save(); showToast("Match added!");
-  ["f-teamA","f-teamB","f-capA","f-capB","f-amount"].forEach(id=>document.getElementById(id).value="");
-}
-
-function filterMatches(f,btn){
+  if(!tournament){showToast("Enter tournament name");return;}
+  if(!date){showToast("Select date");return;}
+  if(!teamA||!teamB){showToast("Select both teams");return;}
+  if(teamA===teamB){showToast("Teams must be different");return;}
+  if(amount<=0){showToast("Enter valid amount");return;}
+  setSyncStatus("syncing");
+  try{
+    await addDoc(matchesCol,{tournament,date,ground,teamA,teamB,capAPhone,capBPhone,amount,type,daynight,ball,status:"pending",winner:"",scoreA:"",scoreB:"",addedBy:currentUser.name,createdAt:serverTimestamp()});
+    ["f-teamA","f-teamB","f-capA","f-capB","f-amount"].forEach(id=>document.getElementById(id).value="");
+    showToast("✅ Match added & synced!");
+  }catch(e){showToast("❌ "+e.message);}
+};
+window.filterMatches=function(f,btn){
   currentFilter=f;
   document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active"); renderMatches();
-}
+};
 
-function ballClass(b){return b==="Pink"?"meta-pink":b==="White"?"meta-white":"meta-red";}
-function dnClass(d){return (d==="Night"||d==="Day-Night")?"meta-night":"meta-day";}
-function ballEmoji(b){return b==="Pink"?"🩷":b==="White"?"⚪":"🔴";}
-function dnEmoji(d){return d==="Night"?"🌙":d==="Day-Night"?"🌅":"☀️";}
+function bC(b){return b==="Pink"?"meta-pink":b==="White"?"meta-white":"meta-red";}
+function dC(d){return(d==="Night"||d==="Day-Night")?"meta-night":"meta-day";}
+function bE(b){return b==="Pink"?"🩷":b==="White"?"⚪":"🔴";}
+function dE(d){return d==="Night"?"🌙":d==="Day-Night"?"🌅":"☀️";}
 
-function renderMatches() {
+function renderMatches(){
   const list=document.getElementById("matches-list");
+  const isAdmin=currentUser&&currentUser.role==="admin";
   let data=matches.filter(m=>currentFilter==="all"||m.status===currentFilter);
-  data=[...data].sort((a,b)=>b.id-a.id);
-  if (!data.length){list.innerHTML='<div class="empty">No matches found</div>';return;}
+  if(!data.length){list.innerHTML='<div class="empty">No matches found</div>';return;}
   list.innerHTML=data.map(m=>`
     <div class="match-card status-${m.status}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
@@ -900,25 +834,26 @@ function renderMatches() {
           <div class="match-meta">
             <span class="meta-tag">📅 ${m.date}</span>
             <span class="meta-tag">🎮 ${m.type}</span>
-            ${m.daynight?`<span class="meta-tag ${dnClass(m.daynight)}">${dnEmoji(m.daynight)} ${m.daynight}</span>`:""}
-            ${m.ball?`<span class="meta-tag ${ballClass(m.ball)}">${ballEmoji(m.ball)} ${m.ball} Ball</span>`:""}
+            ${m.daynight?`<span class="meta-tag ${dC(m.daynight)}">${dE(m.daynight)} ${m.daynight}</span>`:""}
+            ${m.ball?`<span class="meta-tag ${bC(m.ball)}">${bE(m.ball)} ${m.ball}</span>`:""}
             ${m.ground?`<span class="meta-tag">📍 ${m.ground}</span>`:""}
             <span class="meta-tag">🏆 ${m.tournament}</span>
             <span class="meta-tag">💰 ₹${m.amount}/team</span>
             ${m.winner?`<span class="meta-tag" style="background:#dcfce7;color:#166534">🥇 ${m.winner}</span>`:""}
+            ${m.addedBy?`<span class="meta-tag" style="background:#f0f4ff;color:#3730a3">👤 ${m.addedBy}</span>`:""}
           </div>
         </div>
         <span class="badge badge-${m.status}">${m.status}</span>
       </div>
-      ${m.scoreA||m.scoreB?`<div style="margin-top:8px;font-size:13px;color:#444;font-weight:600">${m.teamA}: <b>${m.scoreA}</b> &nbsp;|&nbsp; ${m.teamB}: <b>${m.scoreB}</b></div>`:""}
+      ${m.scoreA||m.scoreB?`<div style="margin-top:8px;font-size:13px;font-weight:600;color:#444">${m.teamA}: <b>${m.scoreA}</b> | ${m.teamB}: <b>${m.scoreB}</b></div>`:""}
       ${m.status==="pending"?`
       <div class="result-block">
-        <label>Update Result After Match</label>
-        <div class="result-row"><span>${m.teamA}</span><input id="sA-${m.id}" placeholder="145/6" value="${m.scoreA}" /></div>
-        <div class="result-row"><span>${m.teamB}</span><input id="sB-${m.id}" placeholder="132/8" value="${m.scoreB}" /></div>
+        <label>Update Result</label>
+        <div class="result-row"><span>${m.teamA}</span><input id="sA-${m.id}" placeholder="145/6" value="${m.scoreA||""}" /></div>
+        <div class="result-row"><span>${m.teamB}</span><input id="sB-${m.id}" placeholder="132/8" value="${m.scoreB||""}" /></div>
         <div class="result-row"><span>Winner</span>
           <select id="win-${m.id}">
-            <option value="">Select winner</option>
+            <option value="">Select</option>
             <option ${m.winner===m.teamA?"selected":""} value="${m.teamA}">${m.teamA}</option>
             <option ${m.winner===m.teamB?"selected":""} value="${m.teamB}">${m.teamB}</option>
             <option value="No Result">No Result / Tie</option>
@@ -926,116 +861,99 @@ function renderMatches() {
         </div>
       </div>`:""}
       <div class="action-row">
-        ${m.status==="pending"?`<button class="btn-xs success" onclick="saveResult(${m.id})">✓ Save Result</button>`:""}
-        ${m.status==="unpaid"?`<button class="btn-xs success" onclick="markPaid(${m.id})">✓ Mark Paid</button>`:""}
-        <button class="btn-xs wa" onclick="pingCaptains(${m.id})">📲 Ping</button>
-        <button class="btn-xs danger" onclick="deleteMatch(${m.id})">🗑</button>
+        ${m.status==="pending"?`<button class="btn-xs success" onclick="saveResult('${m.id}')">✓ Save Result</button>`:""}
+        ${m.status==="unpaid"?`<button class="btn-xs success" onclick="markPaid('${m.id}')">✓ Mark Paid</button>`:""}
+        <button class="btn-xs wa" onclick="pingCaptains('${m.id}')">📲 Ping</button>
+        ${isAdmin?`<button class="btn-xs danger" onclick="deleteMatch('${m.id}','${(m.teamA+"vs"+m.teamB).replace(/'/g,"\\'")}')">🗑</button>`:""}
       </div>
-    </div>
-  `).join("");
+    </div>`).join("");
 }
 
-function saveResult(id){
-  const m=matches.find(x=>x.id===id);
-  m.scoreA=document.getElementById("sA-"+id).value.trim();
-  m.scoreB=document.getElementById("sB-"+id).value.trim();
-  m.winner=document.getElementById("win-"+id).value;
-  if (!m.winner){showToast("Select a winner");return;}
-  m.status="unpaid"; save(); renderMatches(); showToast("Result saved! Collect payment.");
-}
-function markPaid(id){matches.find(x=>x.id===id).status="paid";save();renderMatches();showToast("Payment received!");}
-function deleteMatch(id){if(!confirm("Delete this match?"))return;matches=matches.filter(m=>m.id!==id);save();renderMatches();}
+window.saveResult=async function(id){
+  const sA=document.getElementById("sA-"+id).value.trim();
+  const sB=document.getElementById("sB-"+id).value.trim();
+  const winner=document.getElementById("win-"+id).value;
+  if(!winner){showToast("Select a winner");return;}
+  setSyncStatus("syncing");
+  try{await setDoc(doc(db,"matches",id),{scoreA:sA,scoreB:sB,winner,status:"unpaid"},{merge:true});showToast("✅ Result saved & synced!");}
+  catch(e){showToast("❌ "+e.message);}
+};
+window.markPaid=async function(id){
+  setSyncStatus("syncing");
+  try{await setDoc(doc(db,"matches",id),{status:"paid"},{merge:true});showToast("✅ Payment marked & synced!");}
+  catch(e){showToast("❌ "+e.message);}
+};
+window.deleteMatch=async function(id,label){
+  if(currentUser.role!=="admin"){showToast("❌ Admin only");return;}
+  if(!confirm("Delete match "+label+"?\nDeletes for ALL users."))return;
+  try{await deleteDoc(doc(db,"matches",id));showToast("Match deleted.");}
+  catch(e){showToast("❌ "+e.message);}
+};
 
-// ─── WHATSAPP ─────────────────────────────────────────────────────────────────
+// ── WHATSAPP ──────────────────────────────────────────────────────────────
 function buildMsg(m){
-  return encodeURIComponent(
-    `🏏 *GamePros Tournament*\n📋 *${m.tournament}*\n`+
-    `📅 ${m.date}${m.ground?"\n📍 "+m.ground:""}\n`+
-    `${m.daynight?dnEmoji(m.daynight)+" "+m.daynight+" Match  ":""}${m.ball?ballEmoji(m.ball)+" "+m.ball+" Ball":""}\n\n`+
-    `*${m.teamA}* vs *${m.teamB}*\n`+
-    (m.scoreA?`📊 ${m.teamA}: ${m.scoreA}  |  ${m.teamB}: ${m.scoreB}\n`:"")+
-    (m.winner?`🥇 Winner: *${m.winner}*\n`:"")+
-    `\n💰 Amount to pay: *₹${m.amount}*\n\nPlease clear payment at the earliest. Thank you! 🙏\n— GamePros`
-  );
+  return encodeURIComponent(`🏏 *GamePros Tournament*\n📋 *${m.tournament}*\n📅 ${m.date}${m.ground?"\n📍 "+m.ground:""}\n${m.daynight?dE(m.daynight)+" "+m.daynight+"  ":""}${m.ball?bE(m.ball)+" "+m.ball+" Ball":""}\n\n*${m.teamA}* vs *${m.teamB}*\n${m.scoreA?`📊 ${m.teamA}: ${m.scoreA}  |  ${m.teamB}: ${m.scoreB}\n`:""}${m.winner?`🥇 Winner: *${m.winner}*\n`:""}\n💰 Amount to pay: *₹${m.amount}*\n\nPlease clear payment at the earliest. Thank you! 🙏\n— GamePros`);
 }
-function pingCaptains(id){
-  const m=matches.find(x=>x.id===id),msg=buildMsg(m);
+window.pingCaptains=function(id){
+  const m=matches.find(x=>x.id===id); if(!m)return; const msg=buildMsg(m);
   if(m.capAPhone)window.open("https://wa.me/"+m.capAPhone+"?text="+msg,"_blank");
   if(m.capBPhone)setTimeout(()=>window.open("https://wa.me/"+m.capBPhone+"?text="+msg,"_blank"),700);
   showToast("Opening WhatsApp...");
-}
-function pingAllUnpaid(){
-  const unpaid=matches.filter(m=>m.status==="unpaid");
-  if(!unpaid.length){showToast("No unpaid matches!");return;}
-  let delay=0;
-  unpaid.forEach(m=>{
-    const msg=buildMsg(m);
-    if(m.capAPhone){setTimeout(()=>window.open("https://wa.me/"+m.capAPhone+"?text="+msg,"_blank"),delay);delay+=800;}
-    if(m.capBPhone){setTimeout(()=>window.open("https://wa.me/"+m.capBPhone+"?text="+msg,"_blank"),delay);delay+=800;}
+};
+window.pingAllUnpaid=function(){
+  const list=matches.filter(m=>m.status==="unpaid");
+  if(!list.length){showToast("No unpaid matches!");return;}
+  let d=0;
+  list.forEach(m=>{const msg=buildMsg(m);
+    if(m.capAPhone){setTimeout(()=>window.open("https://wa.me/"+m.capAPhone+"?text="+msg,"_blank"),d);d+=800;}
+    if(m.capBPhone){setTimeout(()=>window.open("https://wa.me/"+m.capBPhone+"?text="+msg,"_blank"),d);d+=800;}
   });
-  showToast("Pinging "+unpaid.length+" match captains...");
-}
+  showToast("Pinging "+list.length+" matches...");
+};
 
-// ─── SUMMARY ──────────────────────────────────────────────────────────────────
+// ── SUMMARY ───────────────────────────────────────────────────────────────
 function renderSummary(){
-  const total=matches.length,pending=matches.filter(m=>m.status==="pending").length;
-  const unpaid=matches.filter(m=>m.status==="unpaid").length,paid=matches.filter(m=>m.status==="paid").length;
-  const dueAmt=matches.filter(m=>m.status==="unpaid").reduce((s,m)=>s+m.amount*2,0);
+  const tot=matches.length,pen=matches.filter(m=>m.status==="pending").length;
+  const unp=matches.filter(m=>m.status==="unpaid").length,paid=matches.filter(m=>m.status==="paid").length;
+  const due=matches.filter(m=>m.status==="unpaid").reduce((s,m)=>s+m.amount*2,0);
   document.getElementById("stats-grid").innerHTML=`
-    <div class="stat-card"><div class="stat-val" style="color:#a07810">${total}</div><div style="font-size:12px;color:#888;margin-top:2px">Total Matches</div></div>
-    <div class="stat-card"><div class="stat-val" style="color:#f59e0b">${pending}</div><div style="font-size:12px;color:#888;margin-top:2px">In Progress</div></div>
-    <div class="stat-card"><div class="stat-val" style="color:#dc2626">${unpaid}</div><div style="font-size:12px;color:#888;margin-top:2px">Awaiting Payment</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#a07810">${tot}</div><div style="font-size:12px;color:#888;margin-top:2px">Total Matches</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#f59e0b">${pen}</div><div style="font-size:12px;color:#888;margin-top:2px">In Progress</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#dc2626">${unp}</div><div style="font-size:12px;color:#888;margin-top:2px">Awaiting Payment</div></div>
     <div class="stat-card"><div class="stat-val" style="color:#16a34a">${paid}</div><div style="font-size:12px;color:#888;margin-top:2px">Payments Done</div></div>
   `;
-  const unpaidList=matches.filter(m=>m.status==="unpaid");
   const pl=document.getElementById("pending-list");
-  if(!unpaidList.length){pl.innerHTML='<div class="empty" style="padding:16px 0">All payments cleared!</div>';return;}
-  pl.innerHTML=`<div style="font-size:13px;font-weight:800;color:#dc2626;margin-bottom:10px">Total outstanding: ₹${dueAmt}</div>`+
-  unpaidList.map(m=>`
-    <div class="team-row">
-      <div style="flex:1"><div class="team-name">${m.teamA} vs ${m.teamB}</div><div class="team-sub">${m.date} · ${m.tournament}</div></div>
-      <div class="owed">₹${m.amount*2}</div>
-      <button class="btn-xs wa" style="margin-left:8px" onclick="pingCaptains(${m.id})">📲</button>
-    </div>
-  `).join("");
+  const ul=matches.filter(m=>m.status==="unpaid");
+  if(!ul.length){pl.innerHTML='<div class="empty" style="padding:16px 0">🎉 All payments cleared!</div>';return;}
+  pl.innerHTML=`<div style="font-size:13px;font-weight:800;color:#dc2626;margin-bottom:10px">Total outstanding: ₹${due}</div>`+
+  ul.map(m=>`<div class="team-row"><div style="flex:1"><div class="team-name">${m.teamA} vs ${m.teamB}</div><div class="team-sub">${m.date} · ${m.tournament}</div></div><div class="owed">₹${m.amount*2}</div><button class="btn-xs wa" style="margin-left:8px" onclick="pingCaptains('${m.id}')">📲</button></div>`).join("");
 }
 
-// ─── EXPORT ───────────────────────────────────────────────────────────────────
-function exportCSV(){
+// ── EXPORT ────────────────────────────────────────────────────────────────
+window.exportCSV=function(){
   if(!matches.length){showToast("No matches to export");return;}
-  const h=["ID","Date","Tournament","Ground","Format","Day/Night","Ball","Team A","Team B","Score A","Score B","Winner","Amt/Team","Total","Status","Cap A Phone","Cap B Phone"];
-  const rows=matches.map(m=>[m.id,m.date,m.tournament,m.ground,m.type,m.daynight||"",m.ball||"",m.teamA,m.teamB,m.scoreA,m.scoreB,m.winner,m.amount,m.amount*2,m.status,m.capAPhone,m.capBPhone]);
+  const h=["ID","Date","Tournament","Ground","Format","Day/Night","Ball","Team A","Team B","Score A","Score B","Winner","Amt/Team","Total","Status","Added By","Cap A Phone","Cap B Phone"];
+  const rows=matches.map(m=>[m.id,m.date,m.tournament,m.ground,m.type,m.daynight||"",m.ball||"",m.teamA,m.teamB,m.scoreA,m.scoreB,m.winner,m.amount,m.amount*2,m.status,m.addedBy||"",m.capAPhone,m.capBPhone]);
   const csv=[h,...rows].map(r=>r.map(c=>'"'+String(c||"").replace(/"/g,'""')+'"').join(",")).join("\n");
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-  a.download="gamepros_"+new Date().toISOString().slice(0,10)+".csv";
-  a.click(); showToast("CSV downloaded!");
-}
+  const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download="gamepros_"+new Date().toISOString().slice(0,10)+".csv"; a.click(); showToast("CSV downloaded!");
+};
+window.clearAllMatches=async function(){
+  if(currentUser.role!=="admin"){showToast("❌ Admin only");return;}
+  if(!confirm("Delete ALL matches? Removes for everyone!"))return;
+  if(!confirm("Are you 100% sure?"))return;
+  try{await Promise.all(matches.map(m=>deleteDoc(doc(db,"matches",m.id))));showToast("All matches deleted.");}
+  catch(e){showToast("❌ "+e.message);}
+};
 
-// ─── SETTINGS ACTIONS ────────────────────────────────────────────────────────
-function clearAllMatches(){
-  if(!confirm("Delete ALL match records? This cannot be undone."))return;
-  matches=[];save();showToast("All matches deleted");
-}
-function factoryReset(){
-  if(!confirm("FACTORY RESET: Delete everything including teams and contacts?"))return;
-  if(!confirm("Are you absolutely sure? All data will be lost!"))return;
-  ["gp_teams","gp_matches","gp_nextId","gp_contacts","gp_pin"].forEach(k=>localStorage.removeItem(k));
-  location.reload();
-}
-
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-document.getElementById("f-date").value=new Date().toISOString().slice(0,10);
-populateTeamDropdowns();
-updateContactCount();
 </script>
 
 <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js", { scope: "./" })
-      .then(r=>console.log("SW OK:", r.scope))
-      .catch(e=>console.warn("SW:", e));
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("./sw.js",{scope:"./"})
+      .then(r=>console.log("SW OK:",r.scope))
+      .catch(e=>console.warn("SW:",e));
   });
 }
 </script>
