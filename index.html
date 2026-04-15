@@ -310,7 +310,8 @@
   <button class="tab" onclick="switchTab('matches',this)">Matches</button>
   <button class="tab" onclick="switchTab('teams',this)">Teams</button>
   <button class="tab" onclick="switchTab('summary',this)">Summary</button>
-  <button class="tab admin-only" onclick="switchTab('users',this)">👥 Users</button>
+  <button class="tab" onclick="switchTab('cricheroes',this)">🏆 CH</button>
+  <button class="tab admin-only" onclick="switchTab('users',this)">👥</button>
   <button class="tab admin-only" onclick="switchTab('settings',this)">⚙️</button>
 </div>
 
@@ -318,8 +319,8 @@
   <button class="nav-btn active" onclick="switchTab('add',this)"><span class="nav-icon">➕</span><span class="nav-label">Add</span></button>
   <button class="nav-btn" onclick="switchTab('matches',this)"><span class="nav-icon">🏏</span><span class="nav-label">Matches</span></button>
   <button class="nav-btn" onclick="switchTab('teams',this)"><span class="nav-icon">👥</span><span class="nav-label">Teams</span></button>
+  <button class="nav-btn" onclick="switchTab('cricheroes',this)"><span class="nav-icon">🏆</span><span class="nav-label">CricHeroes</span></button>
   <button class="nav-btn" onclick="switchTab('summary',this)"><span class="nav-icon">📊</span><span class="nav-label">Summary</span></button>
-  <button class="nav-btn admin-nav" onclick="switchTab('users',this)"><span class="nav-icon">🔑</span><span class="nav-label">Users</span></button>
   <button class="nav-btn admin-nav" onclick="switchTab('settings',this)"><span class="nav-icon">⚙️</span><span class="nav-label">Admin</span></button>
 </div>
 
@@ -394,6 +395,69 @@
   <button class="btn btn-wa" onclick="pingAllUnpaid()">📲 Ping ALL Unpaid Captains</button>
   <div style="height:8px"></div>
   <button class="btn btn-excel" onclick="exportCSV()">📥 Download Excel Report</button>
+</div>
+
+<!-- CRICHEROES -->
+<div id="sec-cricheroes" class="section">
+  <div style="background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);border-radius:16px;padding:20px 16px;margin-bottom:14px;border:1px solid #e63946;text-align:center">
+    <div style="font-size:13px;font-weight:800;color:#e63946;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">LIVE ON CRICHEROES</div>
+    <div style="font-size:22px;font-weight:900;color:white;margin-bottom:4px">🏆 GamePros Tournaments</div>
+    <div style="font-size:12px;color:#aaa">4 tournaments currently running · Tap to view schedule</div>
+  </div>
+
+  <div style="background:white;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-left:4px solid #e63946;border-top:1px solid #f0f0f0;border-right:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div><div style="font-size:15px;font-weight:800;color:#111">Tournament 1</div><div style="font-size:11px;color:#888;margin-top:2px">GamePros · CricHeroes</div></div>
+      <span style="font-size:11px;font-weight:700;color:#e63946;background:#fff0f0;padding:4px 10px;border-radius:20px">● LIVE</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <a href="https://chshare.link/tournament/hjIavW" target="_blank" style="display:block;padding:12px;background:#e63946;color:white;border-radius:10px;text-decoration:none;text-align:center;font-size:13px;font-weight:800">📅 Schedule</a>
+      <a href="https://chshare.link/tournament/hjIavW" target="_blank" style="display:block;padding:12px;background:#111;color:#d4a017;border-radius:10px;text-decoration:none;text-align:center;font-size:13px;font-weight:800;border:1px solid #d4a017">🏆 Table</a>
+    </div>
+  </div>
+
+  <div style="background:white;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-left:4px solid #f59e0b;border-top:1px solid #f0f0f0;border-right:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div><div style="font-size:15px;font-weight:800;color:#111">Tournament 2</div><div style="font-size:11px;color:#888;margin-top:2px">GamePros · CricHeroes</div></div>
+      <span style="font-size:11px;font-weight:700;color:#d97706;background:#fffbeb;padding:4px 10px;border-radius:20px">● LIVE</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <a href="https://chshare.link/tournament/d7XyST" target="_blank" style="display:block;padding:12px;background:#f59e0b;color:#111;border-radius:10px;text-decoration:none;text-align:center;font-size:13px;font-weight:800">📅 Schedule</a>
+      <a href="https://chshare.link/tournament/d7XyST" target="_blank" style="display:block;padding:12px;background:#111;color:#d4a017;border-radius:10px;text-decoration:none;text-align:center;font-size:13px;font-weight:800;border:1px solid #d4a017">🏆 Table</a>
+    </div>
+  </div>
+
+  <div style="background:white;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-left:4px solid #22c55e;border-top:1px solid #f0f0f0;border-right:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div><div style="font-size:15px;font-weight:800;color:#111">Tournament 3</div><div style="font-size:11px;color:#888;margin-top:2px">GamePros · CricHeroes</div></div>
+      <span style="font-size:11px;font-weight:700;color:#16a34a;background:#f0fdf4;padding:4px 10px;border-radius:20px">● LIVE</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <a href="https://chshare.link/tournament/pV0FSK" target="_blank" style="display:block;padding:12px;background:#22c55e;color:white;border-radius:10px;text-decoration:none;text-align:center;font-size:13px;font-weight:800">📅 Schedule</a>
+      <a href="https://chshare.link/tournament/pV0FSK" target="_blank" style="display:block;padding:12px;background:#111;color:#d4a017;border-radius:10px;text-decoration:none;text-align:center;font-size:13px;font-weight:800;border:1px solid #d4a017">🏆 Table</a>
+    </div>
+  </div>
+
+  <div style="background:white;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-left:4px solid #8b5cf6;border-top:1px solid #f0f0f0;border-right:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div><div style="font-size:15px;font-weight:800;color:#111">Tournament 4</div><div style="font-size:11px;color:#888;margin-top:2px">GamePros · CricHeroes</div></div>
+      <span style="font-size:11px;font-weight:700;color:#7c3aed;background:#faf5ff;padding:4px 10px;border-radius:20px">● LIVE</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <a href="https://chshare.link/tournament/ghH9YW" target="_blank" style="display:block;padding:12px;background:#8b5cf6;color:white;border-radius:10px;text-decoration:none;text-align:center;font-size:13px;font-weight:800">📅 Schedule</a>
+      <a href="https://chshare.link/tournament/ghH9YW" target="_blank" style="display:block;padding:12px;background:#111;color:#d4a017;border-radius:10px;text-decoration:none;text-align:center;font-size:13px;font-weight:800;border:1px solid #d4a017">🏆 Table</a>
+    </div>
+  </div>
+
+  <div style="background:#111;border-radius:14px;padding:16px;margin-bottom:4px;border:1px solid #333;text-align:center">
+    <div style="color:#888;font-size:12px;margin-bottom:12px;line-height:1.7">All schedules, scorecards and points tables<br>are live on CricHeroes. Tap to open.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <a href="https://chshare.link/tournament/hjIavW" target="_blank" style="padding:10px;background:#1a1a2e;color:#e63946;border-radius:8px;text-decoration:none;text-align:center;font-size:12px;font-weight:800;border:1px solid #e63946">T1 Open ↗</a>
+      <a href="https://chshare.link/tournament/d7XyST" target="_blank" style="padding:10px;background:#1a1a2e;color:#f59e0b;border-radius:8px;text-decoration:none;text-align:center;font-size:12px;font-weight:800;border:1px solid #f59e0b">T2 Open ↗</a>
+      <a href="https://chshare.link/tournament/pV0FSK" target="_blank" style="padding:10px;background:#1a1a2e;color:#22c55e;border-radius:8px;text-decoration:none;text-align:center;font-size:12px;font-weight:800;border:1px solid #22c55e">T3 Open ↗</a>
+      <a href="https://chshare.link/tournament/ghH9YW" target="_blank" style="padding:10px;background:#1a1a2e;color:#8b5cf6;border-radius:8px;text-decoration:none;text-align:center;font-size:12px;font-weight:800;border:1px solid #8b5cf6">T4 Open ↗</a>
+    </div>
+  </div>
 </div>
 
 <!-- USERS (admin only) -->
